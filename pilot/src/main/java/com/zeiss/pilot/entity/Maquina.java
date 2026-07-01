@@ -52,4 +52,16 @@ public class Maquina {
     public void setUsuarioAtual(String usuarioAtual) { this.usuarioAtual = usuarioAtual; }
     public String getObservacao() { return observacao; }
     public void setObservacao(String observacao) { this.observacao = observacao; }
+
+    // Liga a máquina, exceto se estiver em manutenção
+    public void ligar() {
+        if ("Manutenção".equals(status)) {
+            throw new IllegalStateException("Não é possível ligar a máquina: em manutenção.");
+        }
+        this.ligada = true;
+    }
+
+    public void desligar() {
+        this.ligada = false;
+    }
 }

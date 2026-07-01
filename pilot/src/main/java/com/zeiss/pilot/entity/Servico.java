@@ -90,4 +90,12 @@ public class Servico {
 
     public String getObservacao() { return observacao; }
     public void setObservacao(String observacao) { this.observacao = observacao; }
+
+    // Finaliza o serviço, exceto se o status ainda estiver pendente
+    public void finalizar() {
+        if (status != null && status.contains("pendente")) {
+            throw new IllegalStateException("Não é possível finalizar o serviço: status pendente.");
+        }
+        this.status = "Finalizado";
+    }
 }
