@@ -1,6 +1,12 @@
 package com.zeiss.pilot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "maquinas")
@@ -25,6 +31,21 @@ public class Maquina {
 
     @Column(length = 1000)
     private String observacao;
+
+    // Raiz de agregação: sessões, manutenções e agendamentos são expostos via
+    // endpoints aninhados (/api/maquinas/{id}/sessoes, .../manutencoes, .../agendamentos),
+    // não embutidos no JSON da própria Máquina — por isso @JsonIgnore aqui.
+    @OneToMany(mappedBy = "maquina", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<SessaoMaquina> sessoes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "maquina", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ManutencaoMaquina> manutencoes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "maquina", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<AgendamentoMaquina> agendamentos = new ArrayList<>();
 
     public Maquina() {}
 
@@ -53,15 +74,40 @@ public class Maquina {
     public String getObservacao() { return observacao; }
     public void setObservacao(String observacao) { this.observacao = observacao; }
 
-    // Liga a máquina, exceto se estiver em manutenção
+    public List<SessaoMaquina> getSessoes() { return sessoes; }
+    public void setSessoes(List<SessaoMaquina> sessoes) { this.sessoes = sessoes; }
+    public List<ManutencaoMaquina> getManutencoes() { return manutencoes; }
+    public void setManutencoes(List<ManutencaoMaquina> manutencoes) { this.manutencoes = manutencoes; }
+    public List<AgendamentoMaquina> getAgendamentos() { return agendamentos; }
+    public void setAgendamentos(List<AgendamentoMaquina> agendamentos) { this.agendamentos = agendamentos; }
+
+    // Liga a máquina, exceto se estiver em manutenção; abre uma nova sessão de uso
+    // na coleção `sessoes` para o usuário atualmente registrado.
     public void ligar() {
         if ("Manutenção".equals(status)) {
             throw new IllegalStateException("Não é possível ligar a máquina: em manutenção.");
         }
         this.ligada = true;
+        SessaoMaquina sessao = new SessaoMaquina();
+        sessao.setMaquina(this);
+        sessao.setUsuario(this.usuarioAtual);
+        sessao.setDataLigada(LocalDateTime.now());
+        this.sessoes.add(sessao);
     }
 
+    // Desliga a máquina e encerra a sessão de uso em aberto (se houver),
+    // calculando as horas de uso decorridas.
     public void desligar() {
         this.ligada = false;
+        sessoes.stream()
+                .filter(s -> s.getDataDesligada() == null)
+                .reduce((primeira, ultima) -> ultima)
+                .ifPresent(sessao -> {
+                    LocalDateTime agora = LocalDateTime.now();
+                    sessao.setDataDesligada(agora);
+                    if (sessao.getDataLigada() != null) {
+                        sessao.setHorasUso(Duration.between(sessao.getDataLigada(), agora).toMinutes() / 60.0);
+                    }
+                });
     }
 }

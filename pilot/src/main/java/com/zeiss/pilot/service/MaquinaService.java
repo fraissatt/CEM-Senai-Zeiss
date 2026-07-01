@@ -1,9 +1,5 @@
 package com.zeiss.pilot.service;
 
-import com.zeiss.pilot.dto.AgendamentoMaquinaDTO;
-import com.zeiss.pilot.dto.ManutencaoMaquinaDTO;
-import com.zeiss.pilot.dto.MaquinaDTO;
-import com.zeiss.pilot.dto.SessaoMaquinaDTO;
 import com.zeiss.pilot.entity.AgendamentoMaquina;
 import com.zeiss.pilot.entity.Maquina;
 import com.zeiss.pilot.entity.ManutencaoMaquina;
@@ -15,7 +11,6 @@ import com.zeiss.pilot.repository.SessaoMaquinaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MaquinaService {
@@ -32,27 +27,40 @@ public class MaquinaService {
         this.agendamentoRepository = agendamentoRepository;
     }
 
-    public List<MaquinaDTO> listar() {
-        return maquinaRepository.findAll().stream()
-                .map(MaquinaDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<Maquina> listar() {
+        return maquinaRepository.findAll();
     }
 
-    public MaquinaDTO buscarPorId(Long id) {
-        return MaquinaDTO.fromEntity(maquinaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Máquina não encontrada: " + id)));
-    }
-
-    public MaquinaDTO salvar(MaquinaDTO dto) {
-        return MaquinaDTO.fromEntity(maquinaRepository.save(dto.toEntity()));
-    }
-
-    public MaquinaDTO atualizar(Long id, MaquinaDTO dto) {
-        maquinaRepository.findById(id)
+    public Maquina buscarPorId(Long id) {
+        return maquinaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Máquina não encontrada: " + id));
-        Maquina entity = dto.toEntity();
-        entity.setId(id);
-        return MaquinaDTO.fromEntity(maquinaRepository.save(entity));
+    }
+
+    public Maquina salvar(Maquina dados) {
+        Maquina maquina = new Maquina();
+        copiarCampos(dados, maquina);
+        return maquinaRepository.save(maquina);
+    }
+
+    public Maquina atualizar(Long id, Maquina dados) {
+        Maquina maquina = maquinaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Máquina não encontrada: " + id));
+        copiarCampos(dados, maquina);
+        return maquinaRepository.save(maquina);
+    }
+
+    private void copiarCampos(Maquina origem, Maquina destino) {
+        destino.setNome(origem.getNome());
+        destino.setModelo(origem.getModelo());
+        destino.setTipoMedida(origem.getTipoMedida());
+        destino.setVolumeMedicao(origem.getVolumeMedicao());
+        destino.setFabricante(origem.getFabricante());
+        destino.setAnoInstalacao(origem.getAnoInstalacao());
+        destino.setPatrimonioId(origem.getPatrimonioId());
+        destino.setStatus(origem.getStatus());
+        destino.setLigada(origem.isLigada());
+        destino.setUsuarioAtual(origem.getUsuarioAtual());
+        destino.setObservacao(origem.getObservacao());
     }
 
     public void deletar(Long id) {
@@ -61,36 +69,34 @@ public class MaquinaService {
 
     // Sessões
 
-    public List<SessaoMaquinaDTO> listarSessoes(Long maquinaId) {
-        return sessaoRepository.findByMaquinaId(maquinaId).stream()
-                .map(SessaoMaquinaDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<SessaoMaquina> listarSessoes(Long maquinaId) {
+        return sessaoRepository.findByMaquinaId(maquinaId);
     }
 
-    public SessaoMaquinaDTO criarSessao(Long maquinaId, SessaoMaquinaDTO dto) {
+    public SessaoMaquina criarSessao(Long maquinaId, SessaoMaquina dados) {
         Maquina maquina = maquinaRepository.findById(maquinaId)
                 .orElseThrow(() -> new RuntimeException("Máquina não encontrada: " + maquinaId));
         SessaoMaquina s = new SessaoMaquina();
         s.setMaquina(maquina);
-        s.setUsuario(dto.getUsuario());
-        s.setDataLigada(dto.getDataLigada());
-        s.setDataDesligada(dto.getDataDesligada());
-        s.setHorasUso(dto.getHorasUso());
-        s.setMotivo(dto.getMotivo());
-        s.setObservacao(dto.getObservacao());
-        return SessaoMaquinaDTO.fromEntity(sessaoRepository.save(s));
+        s.setUsuario(dados.getUsuario());
+        s.setDataLigada(dados.getDataLigada());
+        s.setDataDesligada(dados.getDataDesligada());
+        s.setHorasUso(dados.getHorasUso());
+        s.setMotivo(dados.getMotivo());
+        s.setObservacao(dados.getObservacao());
+        return sessaoRepository.save(s);
     }
 
-    public SessaoMaquinaDTO atualizarSessao(Long id, SessaoMaquinaDTO dto) {
+    public SessaoMaquina atualizarSessao(Long id, SessaoMaquina dados) {
         SessaoMaquina existing = sessaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sessão não encontrada: " + id));
-        existing.setUsuario(dto.getUsuario());
-        existing.setDataLigada(dto.getDataLigada());
-        existing.setDataDesligada(dto.getDataDesligada());
-        existing.setHorasUso(dto.getHorasUso());
-        existing.setMotivo(dto.getMotivo());
-        existing.setObservacao(dto.getObservacao());
-        return SessaoMaquinaDTO.fromEntity(sessaoRepository.save(existing));
+        existing.setUsuario(dados.getUsuario());
+        existing.setDataLigada(dados.getDataLigada());
+        existing.setDataDesligada(dados.getDataDesligada());
+        existing.setHorasUso(dados.getHorasUso());
+        existing.setMotivo(dados.getMotivo());
+        existing.setObservacao(dados.getObservacao());
+        return sessaoRepository.save(existing);
     }
 
     public void deletarSessao(Long id) {
@@ -99,36 +105,34 @@ public class MaquinaService {
 
     // Manutenções
 
-    public List<ManutencaoMaquinaDTO> listarManutencoes(Long maquinaId) {
-        return manutencaoRepository.findByMaquinaId(maquinaId).stream()
-                .map(ManutencaoMaquinaDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<ManutencaoMaquina> listarManutencoes(Long maquinaId) {
+        return manutencaoRepository.findByMaquinaId(maquinaId);
     }
 
-    public ManutencaoMaquinaDTO criarManutencao(Long maquinaId, ManutencaoMaquinaDTO dto) {
+    public ManutencaoMaquina criarManutencao(Long maquinaId, ManutencaoMaquina dados) {
         Maquina maquina = maquinaRepository.findById(maquinaId)
                 .orElseThrow(() -> new RuntimeException("Máquina não encontrada: " + maquinaId));
         ManutencaoMaquina m = new ManutencaoMaquina();
         m.setMaquina(maquina);
-        m.setTipo(dto.getTipo());
-        m.setResponsavel(dto.getResponsavel());
-        m.setData(dto.getData());
-        m.setProximaData(dto.getProximaData());
-        m.setStatus(dto.getStatus());
-        m.setObservacao(dto.getObservacao());
-        return ManutencaoMaquinaDTO.fromEntity(manutencaoRepository.save(m));
+        m.setTipo(dados.getTipo());
+        m.setResponsavel(dados.getResponsavel());
+        m.setData(dados.getData());
+        m.setProximaData(dados.getProximaData());
+        m.setStatus(dados.getStatus());
+        m.setObservacao(dados.getObservacao());
+        return manutencaoRepository.save(m);
     }
 
-    public ManutencaoMaquinaDTO atualizarManutencao(Long id, ManutencaoMaquinaDTO dto) {
+    public ManutencaoMaquina atualizarManutencao(Long id, ManutencaoMaquina dados) {
         ManutencaoMaquina existing = manutencaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Manutenção não encontrada: " + id));
-        existing.setTipo(dto.getTipo());
-        existing.setResponsavel(dto.getResponsavel());
-        existing.setData(dto.getData());
-        existing.setProximaData(dto.getProximaData());
-        existing.setStatus(dto.getStatus());
-        existing.setObservacao(dto.getObservacao());
-        return ManutencaoMaquinaDTO.fromEntity(manutencaoRepository.save(existing));
+        existing.setTipo(dados.getTipo());
+        existing.setResponsavel(dados.getResponsavel());
+        existing.setData(dados.getData());
+        existing.setProximaData(dados.getProximaData());
+        existing.setStatus(dados.getStatus());
+        existing.setObservacao(dados.getObservacao());
+        return manutencaoRepository.save(existing);
     }
 
     public void deletarManutencao(Long id) {
@@ -137,34 +141,32 @@ public class MaquinaService {
 
     // Agendamentos
 
-    public List<AgendamentoMaquinaDTO> listarAgendamentos(Long maquinaId) {
-        return agendamentoRepository.findByMaquinaId(maquinaId).stream()
-                .map(AgendamentoMaquinaDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<AgendamentoMaquina> listarAgendamentos(Long maquinaId) {
+        return agendamentoRepository.findByMaquinaId(maquinaId);
     }
 
-    public AgendamentoMaquinaDTO criarAgendamento(Long maquinaId, AgendamentoMaquinaDTO dto) {
+    public AgendamentoMaquina criarAgendamento(Long maquinaId, AgendamentoMaquina dados) {
         Maquina maquina = maquinaRepository.findById(maquinaId)
                 .orElseThrow(() -> new RuntimeException("Máquina não encontrada: " + maquinaId));
         AgendamentoMaquina a = new AgendamentoMaquina();
         a.setMaquina(maquina);
-        a.setUsuario(dto.getUsuario());
-        a.setDataInicio(dto.getDataInicio());
-        a.setDataFim(dto.getDataFim());
-        a.setMotivo(dto.getMotivo());
-        a.setConfirmado(dto.isConfirmado());
-        return AgendamentoMaquinaDTO.fromEntity(agendamentoRepository.save(a));
+        a.setUsuario(dados.getUsuario());
+        a.setDataInicio(dados.getDataInicio());
+        a.setDataFim(dados.getDataFim());
+        a.setMotivo(dados.getMotivo());
+        a.setConfirmado(dados.isConfirmado());
+        return agendamentoRepository.save(a);
     }
 
-    public AgendamentoMaquinaDTO atualizarAgendamento(Long id, AgendamentoMaquinaDTO dto) {
+    public AgendamentoMaquina atualizarAgendamento(Long id, AgendamentoMaquina dados) {
         AgendamentoMaquina existing = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado: " + id));
-        existing.setUsuario(dto.getUsuario());
-        existing.setDataInicio(dto.getDataInicio());
-        existing.setDataFim(dto.getDataFim());
-        existing.setMotivo(dto.getMotivo());
-        existing.setConfirmado(dto.isConfirmado());
-        return AgendamentoMaquinaDTO.fromEntity(agendamentoRepository.save(existing));
+        existing.setUsuario(dados.getUsuario());
+        existing.setDataInicio(dados.getDataInicio());
+        existing.setDataFim(dados.getDataFim());
+        existing.setMotivo(dados.getMotivo());
+        existing.setConfirmado(dados.isConfirmado());
+        return agendamentoRepository.save(existing);
     }
 
     public void deletarAgendamento(Long id) {

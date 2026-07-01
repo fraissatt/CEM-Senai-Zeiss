@@ -1,5 +1,6 @@
 package com.zeiss.pilot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -11,8 +12,11 @@ public class ManutencaoMaquina {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Ignorado no JSON: evita ciclo com Maquina.manutencoes e é redundante, já que
+    // o endpoint aninhado (/api/maquinas/{maquinaId}/manutencoes) já informa a máquina via URL.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maquina_id", nullable = false)
+    @JsonIgnore
     private Maquina maquina;
 
     private String tipo;
