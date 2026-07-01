@@ -1,6 +1,6 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.DocumentoMaquinaDTO;
+import com.zeiss.pilot.entity.DocumentoMaquina;
 import com.zeiss.pilot.service.DocumentoMaquinaService;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,13 +24,13 @@ public class DocumentoMaquinaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DocumentoMaquinaDTO>> listar(@PathVariable Long maquinaId) {
+    public ResponseEntity<List<DocumentoMaquina>> listar(@PathVariable Long maquinaId) {
         return ResponseEntity.ok(service.listar(maquinaId));
     }
 
     @PostMapping("/upload")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<DocumentoMaquinaDTO> upload(
+    public ResponseEntity<DocumentoMaquina> upload(
             @PathVariable Long maquinaId,
             @RequestParam("arquivo") MultipartFile arquivo,
             @RequestParam(value = "tipoDocumento", required = false) String tipoDocumento,
