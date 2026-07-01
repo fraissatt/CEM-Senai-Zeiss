@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.zeiss.pilot.dto.VisitaTecnicaDTO;
 import com.zeiss.pilot.entity.VisitaTecnica;
 import com.zeiss.pilot.repository.VisitaTecnicaRepository;
 
@@ -31,15 +30,8 @@ public class VisitaTecnicaService {
         repository.deleteById(id);
     }
 
-    // ✅ Adicional: Buscar por ID (para possível uso com DTO)
+    // ✅ Adicional: Buscar por ID
     public Optional<VisitaTecnica> buscarPorId(Long id) {
         return repository.findById(id);
-    }
-
-    // ✅ Extra (opcional): salvar usando DTO diretamente
-    public VisitaTecnicaDTO salvarVisitaDTO(VisitaTecnicaDTO dto) {
-        VisitaTecnica entidade = dto.toEntity();
-        VisitaTecnica salvo = repository.save(entidade);
-        return VisitaTecnicaDTO.fromEntity(salvo);
     }
 }

@@ -1,7 +1,6 @@
 package com.zeiss.pilot.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zeiss.pilot.dto.VisitaTecnicaDTO;
 import com.zeiss.pilot.entity.VisitaTecnica;
 import com.zeiss.pilot.service.VisitaTecnicaService;
 
@@ -28,35 +26,26 @@ public class VisitaTecnicaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VisitaTecnicaDTO>> getAllVisitas() {
-        List<VisitaTecnica> visitas = service.listarVisitas();
-        List<VisitaTecnicaDTO> dtos = visitas.stream()
-                                             .map(VisitaTecnicaDTO::fromEntity)
-                                             .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<List<VisitaTecnica>> getAllVisitas() {
+        return ResponseEntity.ok(service.listarVisitas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VisitaTecnicaDTO> buscarVisita(@PathVariable Long id) {
+    public ResponseEntity<VisitaTecnica> buscarVisita(@PathVariable Long id) {
         return service.buscarPorId(id)
-                       .map(VisitaTecnicaDTO::fromEntity)
                        .map(ResponseEntity::ok)
                        .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<VisitaTecnicaDTO> salvarVisita(@RequestBody VisitaTecnicaDTO dto) {
-        VisitaTecnica entidade = dto.toEntity();
-        VisitaTecnica salvo = service.salvarVisita(entidade);
-        return ResponseEntity.ok(VisitaTecnicaDTO.fromEntity(salvo));
+    public ResponseEntity<VisitaTecnica> salvarVisita(@RequestBody VisitaTecnica visita) {
+        return ResponseEntity.ok(service.salvarVisita(visita));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VisitaTecnicaDTO> atualizarVisita(@PathVariable Long id, @RequestBody VisitaTecnicaDTO dto) {
-        VisitaTecnica entidade = dto.toEntity();
-        entidade.setId(id);
-        VisitaTecnica atualizado = service.salvarVisita(entidade);
-        return ResponseEntity.ok(VisitaTecnicaDTO.fromEntity(atualizado));
+    public ResponseEntity<VisitaTecnica> atualizarVisita(@PathVariable Long id, @RequestBody VisitaTecnica visita) {
+        visita.setId(id);
+        return ResponseEntity.ok(service.salvarVisita(visita));
     }
 
     @DeleteMapping("/{id}")
