@@ -87,7 +87,8 @@ Criar `docs/REFACTOR_IMPACT_MATRIX.md` documentando, para cada Entity a consolid
 ### Task 10: Unificar `Usuario`
 - `entity/Usuario.java`, `controller/UsuarioController.java`, `service/UsuarioService.java`
 - Deletar `dto/UsuarioDTO.java`
-- Particularidade: `toDTO()` deve continuar existindo com uma sobrecarga/flag para controlar se inclui relacionamentos pesados (`documentos`, `notas`) — por padrão NÃO incluir, para não sobrecarregar respostas de listagem.
+- **Decisão (pós Task 3, confirmada com o usuário):** `Usuario` NÃO possui `@OneToMany` para `DocumentoPDF`/`NotaEstagiario` (a matriz de impacto confirmou isso — a FK real é o inverso, `DocumentoPDF.usuario`). Não criar uma coleção nova na Entity só para satisfazer a flag `toDTO(boolean incluirRelacionados)` do plano original. Em vez disso, se algum endpoint precisar retornar os documentos de um usuário, o Service busca sob demanda via `DocumentoPDFRepository.findByUsuario(usuario)` (ou query equivalente) e monta a resposta manualmente — sem acoplar isso ao mapeamento JPA da Entity.
+- Lembrar: `Usuario.senha` já está protegida com `@JsonProperty(WRITE_ONLY)` (commit `fc5ee8d`) — não remover essa proteção ao consolidar.
 
 **Checkpoint Wave 3:** mais 3 DTOs eliminados, padrão com relações validado.
 
