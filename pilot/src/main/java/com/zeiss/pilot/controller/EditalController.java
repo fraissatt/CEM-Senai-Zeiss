@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zeiss.pilot.dto.EditalDTO;
+import com.zeiss.pilot.entity.Edital;
 import com.zeiss.pilot.service.EditalService;
 
 @RestController
@@ -26,30 +26,30 @@ public class EditalController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EditalDTO>> listarTodos() {
+    public ResponseEntity<List<Edital>> listarTodos() {
         return ResponseEntity.ok(editalService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EditalDTO> buscarPorId(@PathVariable Long id) {
-        EditalDTO edital = editalService.buscarPorId(id);
+    public ResponseEntity<Edital> buscarPorId(@PathVariable Long id) {
+        Edital edital = editalService.buscarPorId(id);
         return edital != null ? ResponseEntity.ok(edital) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<EditalDTO> criarEdital(@RequestBody EditalDTO editalDTO) {
+    public ResponseEntity<Edital> criarEdital(@RequestBody Edital edital) {
         try {
-            return ResponseEntity.ok(editalService.criarEdital(editalDTO));
+            return ResponseEntity.ok(editalService.criarEdital(edital));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EditalDTO> atualizarEdital(@PathVariable Long id, @RequestBody EditalDTO editalDTO) {
+    public ResponseEntity<Edital> atualizarEdital(@PathVariable Long id, @RequestBody Edital edital) {
         try {
-            editalDTO.setId(id);
-            return ResponseEntity.ok(editalService.atualizarEdital(id, editalDTO));
+            edital.setId(id);
+            return ResponseEntity.ok(editalService.atualizarEdital(id, edital));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
