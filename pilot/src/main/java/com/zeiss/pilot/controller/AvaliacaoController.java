@@ -1,6 +1,6 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.AvaliacaoDTO;
+import com.zeiss.pilot.entity.Avaliacao;
 import com.zeiss.pilot.service.AvaliacaoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,12 @@ public class AvaliacaoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AvaliacaoDTO>> listar() {
+    public ResponseEntity<List<Avaliacao>> listar() {
         return ResponseEntity.ok(service.listar());
     }
 
     @PostMapping
-    public ResponseEntity<AvaliacaoDTO> criar(@RequestBody AvaliacaoDTO dto) {
-        return ResponseEntity.ok(service.salvar(dto));
+    public ResponseEntity<Avaliacao> criar(@RequestBody Avaliacao entity) {
+        return ResponseEntity.ok(service.salvar(entity));
     }
 }
