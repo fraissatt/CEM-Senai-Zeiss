@@ -2,6 +2,8 @@ package com.zeiss.pilot.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,6 +47,9 @@ public class Usuario {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
+    // WRITE_ONLY: nunca serializar a senha em respostas JSON (ex.: Usuario aparece
+    // aninhado em Projeto.responsavel e outras relacoes agora que a Entity e' retornada direto)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
