@@ -1,6 +1,5 @@
 package com.zeiss.pilot.service;
 
-import com.zeiss.pilot.dto.AmostraDTO;
 import com.zeiss.pilot.entity.Amostra;
 import com.zeiss.pilot.repository.AmostraRepository;
 import org.springframework.data.domain.Page;
@@ -20,16 +19,14 @@ public class AmostraService {
         this.repository = repository;
     }
 
-    public Page<AmostraDTO> listarPaginado(int page, int size, String query, String status) {
+    public Page<Amostra> listarPaginado(int page, int size, String query, String status) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dataEntrada"));
         String q = (query  != null && !query.trim().isEmpty())  ? query.trim()  : null;
         String s = (status != null && !status.trim().isEmpty()) ? status.trim() : null;
 
-        Page<Amostra> result = "Vencendo".equals(s)
+        return "Vencendo".equals(s)
                 ? repository.searchVencendo(q, LocalDate.now(), pageable)
                 : repository.search(q, s, pageable);
-
-        return result.map(AmostraDTO::fromEntity);
     }
 
     public Map<String, Long> getKpis() {
@@ -42,22 +39,30 @@ public class AmostraService {
         );
     }
 
-    public AmostraDTO buscarPorId(Long id) {
-        Amostra a = repository.findById(id)
+    public Amostra buscarPorId(Long id) {
+        return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Amostra não encontrada: " + id));
-        return AmostraDTO.fromEntity(a);
     }
 
-    public AmostraDTO salvar(AmostraDTO dto) {
-        return AmostraDTO.fromEntity(repository.save(dto.toEntity()));
+    public Amostra salvar(Amostra amostra) {
+        normalizar(amostra);
+        return repository.save(amostra);
     }
 
-    public AmostraDTO atualizar(Long id, AmostraDTO dto) {
+    public Amostra atualizar(Long id, Amostra amostra) {
         repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Amostra não encontrada: " + id));
-        Amostra entity = dto.toEntity();
-        entity.setId(id);
-        return AmostraDTO.fromEntity(repository.save(entity));
+        normalizar(amostra);
+        amostra.setId(id);
+        return repository.save(amostra);
+    }
+
+    // Preserva a normalização antes feita em AmostraDTO.toEntity(): status
+    // default para "Em custódia" quando ausente.
+    private void normalizar(Amostra amostra) {
+        if (amostra.getStatus() == null) {
+            amostra.setStatus("Em custódia");
+        }
     }
 
     public void deletar(Long id) {

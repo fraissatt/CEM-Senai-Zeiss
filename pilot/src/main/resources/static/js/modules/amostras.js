@@ -397,25 +397,21 @@
       servicos:             getServicos(),
       objetivoCliente:      val('amostraObjetivoCliente'),
       // Seção 4 - condição
-      condicao: {
-        pecaConforme:      val('cond1'),
-        quantidadeCorreta: val('cond2'),
-        embalagemIntegra:  val('cond3'),
-        semDanoTransporte: val('cond4'),
-        pecaLimpa:         val('cond5'),
-        semContaminacao:   val('cond6'),
-        identificacao:     val('cond7'),
-        documentos:        val('cond8'),
-        permiteExecucao:   val('cond9'),
-      },
+      condPecaConforme:      val('cond1'),
+      condQuantidadeCorreta: val('cond2'),
+      condEmbalagemIntegra:  val('cond3'),
+      condSemDanoTransporte: val('cond4'),
+      condPecaLimpa:         val('cond5'),
+      condSemContaminacao:   val('cond6'),
+      condIdentificacao:     val('cond7'),
+      condDocumentos:        val('cond8'),
+      condPermiteExecucao:   val('cond9'),
       obsCondicao:          val('amostraObsCondicao'),
       // Seção 5 - fotos
-      fotos: {
-        embalagem:    val('foto1'),
-        pecaAntes:    val('foto2'),
-        etiqueta:     val('foto3'),
-        danos:        val('foto4'),
-      },
+      fotoEmbalagem:  val('foto1'),
+      fotoPecaAntes:  val('foto2'),
+      fotoEtiqueta:   val('foto3'),
+      fotoDanos:      val('foto4'),
       pathFotos:            val('amostraPathFotos'),
       // Seção 6
       codigoAtribuido:      val('amostraCodigoAtribuido'),
@@ -488,17 +484,15 @@
     setServicos(a.servicos);
     setVal('amostraObjetivoCliente',    a.objetivoCliente);
     // Condição
-    const c = a.condicao || {};
-    setVal('cond1', c.pecaConforme);      setVal('cond2', c.quantidadeCorreta);
-    setVal('cond3', c.embalagemIntegra);  setVal('cond4', c.semDanoTransporte);
-    setVal('cond5', c.pecaLimpa);         setVal('cond6', c.semContaminacao);
-    setVal('cond7', c.identificacao);     setVal('cond8', c.documentos);
-    setVal('cond9', c.permiteExecucao);
+    setVal('cond1', a.condPecaConforme);      setVal('cond2', a.condQuantidadeCorreta);
+    setVal('cond3', a.condEmbalagemIntegra);  setVal('cond4', a.condSemDanoTransporte);
+    setVal('cond5', a.condPecaLimpa);         setVal('cond6', a.condSemContaminacao);
+    setVal('cond7', a.condIdentificacao);     setVal('cond8', a.condDocumentos);
+    setVal('cond9', a.condPermiteExecucao);
     setVal('amostraObsCondicao',         a.obsCondicao);
     // Fotos
-    const f = a.fotos || {};
-    setVal('foto1', f.embalagem); setVal('foto2', f.pecaAntes);
-    setVal('foto3', f.etiqueta);  setVal('foto4', f.danos);
+    setVal('foto1', a.fotoEmbalagem); setVal('foto2', a.fotoPecaAntes);
+    setVal('foto3', a.fotoEtiqueta);  setVal('foto4', a.fotoDanos);
     setVal('amostraPathFotos',           a.pathFotos);
     // Armazenamento
     setVal('amostraCodigoAtribuido',     a.codigoAtribuido);
