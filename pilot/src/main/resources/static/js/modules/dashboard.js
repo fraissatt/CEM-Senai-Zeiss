@@ -219,7 +219,7 @@ const Dashboard = (() => {
               ${StatusBadge?.prioridade(p.prioridade) || ''}
             </div>
             <div class="activity-meta">
-              ${p.responsavelNome || p.responsavel || '—'} ·
+              ${p.responsavel?.nome || '—'} ·
               ${_t('Término previsto')}: ${Fmt?.date(p.previsaoTermino) || '—'}
             </div>
           </div>
