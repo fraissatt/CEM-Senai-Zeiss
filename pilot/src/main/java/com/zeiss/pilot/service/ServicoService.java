@@ -1,7 +1,6 @@
 package com.zeiss.pilot.service;
 
 import com.zeiss.pilot.dto.RelatorioMensalDTO;
-import com.zeiss.pilot.dto.ServicoDTO;
 import com.zeiss.pilot.entity.Servico;
 import com.zeiss.pilot.repository.ServicoRepository;
 import org.springframework.data.domain.Page;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,31 +20,42 @@ public class ServicoService {
         this.servicoRepository = servicoRepository;
     }
 
-    public Page<ServicoDTO> listarPaginado(int page, int size, String query, String status) {
+    public Page<Servico> listarPaginado(int page, int size, String query, String status) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dataCriacao"));
         return servicoRepository.search(
                 query  != null && !query.trim().isEmpty()  ? query.trim()  : null,
                 status != null && !status.trim().isEmpty() ? status.trim() : null,
                 pageable
-        ).map(ServicoDTO::fromEntity);
+        );
     }
 
-    public ServicoDTO buscarPorId(Long id) {
+    public Servico buscarPorId(Long id) {
         return servicoRepository.findById(id)
-                .map(ServicoDTO::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado: " + id));
     }
 
-    public ServicoDTO criarServico(ServicoDTO dto) {
-        return ServicoDTO.fromEntity(servicoRepository.save(dto.toEntity()));
+    public Servico criarServico(Servico servico) {
+        normalizar(servico);
+        return servicoRepository.save(servico);
     }
 
-    public ServicoDTO atualizarServico(Long id, ServicoDTO dto) {
+    public Servico atualizarServico(Long id, Servico servico) {
         servicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado: " + id));
-        Servico entity = dto.toEntity();
-        entity.setId(id);
-        return ServicoDTO.fromEntity(servicoRepository.save(entity));
+        normalizar(servico);
+        servico.setId(id);
+        return servicoRepository.save(servico);
+    }
+
+    // Preserva a normalização antes feita em ServicoDTO.toEntity(): data de criação
+    // default para hoje quando ausente e observação em branco vira null.
+    private void normalizar(Servico servico) {
+        if (servico.getDataCriacao() == null) {
+            servico.setDataCriacao(LocalDate.now());
+        }
+        if (servico.getObservacao() != null && servico.getObservacao().trim().isEmpty()) {
+            servico.setObservacao(null);
+        }
     }
 
     public List<RelatorioMensalDTO> obterRelatorioMensal() {
