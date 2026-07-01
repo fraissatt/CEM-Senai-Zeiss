@@ -1,15 +1,13 @@
 package com.zeiss.pilot.service;
 
-import com.zeiss.pilot.dto.ItemAlmoxarifadoDTO;
-import com.zeiss.pilot.dto.MovimentacaoAlmoxarifadoDTO;
 import com.zeiss.pilot.entity.ItemAlmoxarifado;
 import com.zeiss.pilot.entity.MovimentacaoAlmoxarifado;
 import com.zeiss.pilot.repository.ItemAlmoxarifadoRepository;
 import com.zeiss.pilot.repository.MovimentacaoAlmoxarifadoRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AlmoxarifadoService {
@@ -23,17 +21,15 @@ public class AlmoxarifadoService {
         this.movimentacaoRepository = movimentacaoRepository;
     }
 
-    public List<ItemAlmoxarifadoDTO> listarItens() {
-        return itemRepository.findAll().stream()
-                .map(ItemAlmoxarifadoDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<ItemAlmoxarifado> listarItens() {
+        return itemRepository.findAll();
     }
 
-    public ItemAlmoxarifadoDTO salvarItem(ItemAlmoxarifadoDTO dto) {
-        return ItemAlmoxarifadoDTO.fromEntity(itemRepository.save(dto.toEntity()));
+    public ItemAlmoxarifado salvarItem(ItemAlmoxarifado item) {
+        return itemRepository.save(item);
     }
 
-    public ItemAlmoxarifadoDTO atualizarItem(Long id, ItemAlmoxarifadoDTO dto) {
+    public ItemAlmoxarifado atualizarItem(Long id, ItemAlmoxarifado dto) {
         ItemAlmoxarifado existing = itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado: " + id));
         existing.setNome(dto.getNome());
@@ -42,28 +38,28 @@ public class AlmoxarifadoService {
         existing.setEstoqueMinimo(dto.getEstoqueMinimo());
         existing.setLocalizacao(dto.getLocalizacao());
         existing.setObservacao(dto.getObservacao());
-        return ItemAlmoxarifadoDTO.fromEntity(itemRepository.save(existing));
+        return itemRepository.save(existing);
     }
 
     public void deletarItem(Long id) {
         itemRepository.deleteById(id);
     }
 
-    public List<MovimentacaoAlmoxarifadoDTO> listarMovimentacoes() {
-        return movimentacaoRepository.findAll().stream()
-                .map(MovimentacaoAlmoxarifadoDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<MovimentacaoAlmoxarifado> listarMovimentacoes() {
+        return movimentacaoRepository.findAll();
     }
 
-    public List<MovimentacaoAlmoxarifadoDTO> listarMovimentacoesPorItem(Long itemId) {
-        return movimentacaoRepository.findByItemId(itemId).stream()
-                .map(MovimentacaoAlmoxarifadoDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<MovimentacaoAlmoxarifado> listarMovimentacoesPorItem(Long itemId) {
+        return movimentacaoRepository.findByItemId(itemId);
     }
 
-    public MovimentacaoAlmoxarifadoDTO registrarMovimentacao(MovimentacaoAlmoxarifadoDTO dto) {
-        ItemAlmoxarifado item = itemRepository.findById(dto.getItemId())
-                .orElseThrow(() -> new RuntimeException("Item não encontrado: " + dto.getItemId()));
+    public MovimentacaoAlmoxarifado registrarMovimentacao(MovimentacaoAlmoxarifado dto) {
+        Long itemId = dto.getItem() != null ? dto.getItem().getId() : null;
+        if (itemId == null) {
+            throw new RuntimeException("Item não informado para a movimentação");
+        }
+        ItemAlmoxarifado item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado: " + itemId));
         int delta = "entrada".equalsIgnoreCase(dto.getTipo()) ? dto.getQuantidade() : -dto.getQuantidade();
         item.setQuantidadeAtual(Math.max(0, item.getQuantidadeAtual() + delta));
         itemRepository.save(item);
@@ -74,7 +70,7 @@ public class AlmoxarifadoService {
         m.setQuantidade(dto.getQuantidade());
         m.setResponsavel(dto.getResponsavel());
         m.setMotivo(dto.getMotivo());
-        m.setData(dto.getData() != null ? dto.getData() : java.time.LocalDateTime.now());
-        return MovimentacaoAlmoxarifadoDTO.fromEntity(movimentacaoRepository.save(m));
+        m.setData(dto.getData() != null ? dto.getData() : LocalDateTime.now());
+        return movimentacaoRepository.save(m);
     }
 }

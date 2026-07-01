@@ -373,7 +373,7 @@
 
     try {
       await Api.post(API_MOV, {
-        itemId:      movItemId,
+        item:        { id: movItemId },
         tipo,
         quantidade:  qtd,
         responsavel,
@@ -476,7 +476,7 @@
     }
 
     const filtered = movs
-      .filter(m => m.itemId === id)
+      .filter(m => m.item?.id === id)
       .sort((a, b) => new Date(b.data) - new Date(a.data));
 
     if (!filtered.length) {
