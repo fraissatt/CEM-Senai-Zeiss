@@ -1,6 +1,6 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.VerificacaoAmbientalDTO;
+import com.zeiss.pilot.entity.VerificacaoAmbiental;
 import com.zeiss.pilot.service.VerificacaoAmbientalService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,12 @@ public class VerificacaoAmbientalController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VerificacaoAmbientalDTO>> listar() {
+    public ResponseEntity<List<VerificacaoAmbiental>> listar() {
         return ResponseEntity.ok(service.listar());
     }
 
     @PostMapping
-    public ResponseEntity<VerificacaoAmbientalDTO> criar(@RequestBody VerificacaoAmbientalDTO dto) {
-        return ResponseEntity.ok(service.salvar(dto));
+    public ResponseEntity<VerificacaoAmbiental> criar(@RequestBody VerificacaoAmbiental entity) {
+        return ResponseEntity.ok(service.salvar(entity));
     }
 }
