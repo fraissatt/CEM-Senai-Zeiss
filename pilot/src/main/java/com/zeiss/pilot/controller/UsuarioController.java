@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zeiss.pilot.dto.UsuarioDTO;
 import com.zeiss.pilot.entity.Usuario;
 import com.zeiss.pilot.service.UsuarioService;
 
@@ -33,7 +32,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>> listarUsuarios(@RequestParam(required = false) String role) {
+    public ResponseEntity<List<Usuario>> listarUsuarios(@RequestParam(required = false) String role) {
         if (role != null && !role.isEmpty()) {
             return ResponseEntity.ok(usuarioService.listarUsuariosPorRole(role));
         }
@@ -41,22 +40,22 @@ public class UsuarioController {
     }
 
     @GetMapping("/admins")
-    public ResponseEntity<List<UsuarioDTO>> listarApenasAdmins() {
+    public ResponseEntity<List<Usuario>> listarApenasAdmins() {
         return ResponseEntity.ok(usuarioService.listarUsuariosPorRole("ADMIN"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable Long id) {
+    public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> criarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
         return ResponseEntity.ok(usuarioService.criarUsuario(usuario));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         return ResponseEntity.ok(usuarioService.atualizarUsuario(id, usuario));
     }
 
