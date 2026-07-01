@@ -1,12 +1,10 @@
 package com.zeiss.pilot.service;
 
-import com.zeiss.pilot.dto.EstagiarioDTO;
 import com.zeiss.pilot.entity.Estagiario;
 import com.zeiss.pilot.repository.EstagiarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EstagiarioService {
@@ -17,33 +15,28 @@ public class EstagiarioService {
         this.repository = repository;
     }
 
-    public List<EstagiarioDTO> listar() {
-        return repository.findAll().stream()
-                .map(EstagiarioDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<Estagiario> listar() {
+        return repository.findAll();
     }
 
-    public List<EstagiarioDTO> listarAtivos() {
-        return repository.findByAtivoTrue().stream()
-                .map(EstagiarioDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<Estagiario> listarAtivos() {
+        return repository.findByAtivoTrue();
     }
 
-    public EstagiarioDTO buscarPorId(Long id) {
-        return EstagiarioDTO.fromEntity(repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estagiário não encontrado: " + id)));
+    public Estagiario buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estagiário não encontrado: " + id));
     }
 
-    public EstagiarioDTO salvar(EstagiarioDTO dto) {
-        return EstagiarioDTO.fromEntity(repository.save(dto.toEntity()));
+    public Estagiario salvar(Estagiario estagiario) {
+        return repository.save(estagiario);
     }
 
-    public EstagiarioDTO atualizar(Long id, EstagiarioDTO dto) {
+    public Estagiario atualizar(Long id, Estagiario estagiario) {
         repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estagiário não encontrado: " + id));
-        Estagiario entity = dto.toEntity();
-        entity.setId(id);
-        return EstagiarioDTO.fromEntity(repository.save(entity));
+        estagiario.setId(id);
+        return repository.save(estagiario);
     }
 
     public void deletar(Long id) {
