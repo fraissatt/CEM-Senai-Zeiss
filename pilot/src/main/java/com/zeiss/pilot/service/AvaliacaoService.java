@@ -20,6 +20,7 @@ public class AvaliacaoService {
     }
 
     public Avaliacao salvar(Avaliacao entity) {
+        entity.setId(null);
         return repository.save(entity);
     }
 }

@@ -20,6 +20,7 @@ public class VerificacaoAmbientalService {
     }
 
     public VerificacaoAmbiental salvar(VerificacaoAmbiental entity) {
+        entity.setId(null);
         return repository.save(entity);
     }
 }

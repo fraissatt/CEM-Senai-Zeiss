@@ -2,6 +2,7 @@ package com.zeiss.pilot.service;
 
 import com.zeiss.pilot.entity.KanbanCard;
 import com.zeiss.pilot.repository.KanbanCardRepository;
+import com.zeiss.pilot.util.MapperUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,14 +25,15 @@ public class KanbanCardService {
     }
 
     public KanbanCard salvar(KanbanCard card) {
+        card.setId(null);
         return repository.save(card);
     }
 
     public KanbanCard atualizar(Long id, KanbanCard card) {
-        repository.findById(id)
+        KanbanCard existente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Card não encontrado: " + id));
-        card.setId(id);
-        return repository.save(card);
+        MapperUtil.copyNonNullProperties(card, existente);
+        return repository.save(existente);
     }
 
     public void deletar(Long id) {

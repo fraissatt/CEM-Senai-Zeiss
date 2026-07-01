@@ -26,6 +26,7 @@ public class AlmoxarifadoService {
     }
 
     public ItemAlmoxarifado salvarItem(ItemAlmoxarifado item) {
+        item.setId(null);
         return itemRepository.save(item);
     }
 

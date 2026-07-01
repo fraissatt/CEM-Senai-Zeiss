@@ -25,6 +25,7 @@ public class NotaEstagiarioService {
     }
 
     public NotaEstagiario salvar(NotaEstagiario nota) {
+        nota.setId(null);
         return repository.save(nota);
     }
 }

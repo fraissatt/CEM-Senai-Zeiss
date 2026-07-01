@@ -45,6 +45,7 @@ public class AmostraService {
     }
 
     public Amostra salvar(Amostra amostra) {
+        amostra.setId(null);
         normalizar(amostra);
         return repository.save(amostra);
     }
