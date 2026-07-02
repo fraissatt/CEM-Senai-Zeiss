@@ -61,12 +61,7 @@ public class PastaDocumentoService {
 
     public void excluir(Long id) {
         PastaDocumento pasta = obter(id);
-        if (!pasta.getSubpastas().isEmpty()) {
-            throw new IllegalStateException("Exclusão bloqueada: existem subpastas.");
-        }
-        if (!pasta.getDocumentos().isEmpty()) {
-            throw new IllegalStateException("Exclusão bloqueada: existem documentos vinculados.");
-        }
+        pasta.validarExclusao();
         repo.delete(pasta);
     }
 
