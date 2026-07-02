@@ -54,4 +54,9 @@ public class KanbanCard {
     public void setCriadoPor(String criadoPor) { this.criadoPor = criadoPor; }
     public LocalDate getCriadoEm() { return criadoEm; }
     public void setCriadoEm(LocalDate criadoEm) { this.criadoEm = criadoEm; }
+
+    // Um card está vencido se tiver prazo definido, esse prazo já passou, e a coluna não é "concluido".
+    public boolean isVencido() {
+        return prazo != null && prazo.isBefore(LocalDate.now()) && !"concluido".equalsIgnoreCase(coluna);
+    }
 }
