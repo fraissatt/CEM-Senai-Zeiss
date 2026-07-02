@@ -1,6 +1,6 @@
 # Phase 1: Unified Model Refactoring
 
-**Status:** Em execução
+**Status:** Waves 1-4 concluídas (19/20 entities). Task 13 (`DocumentoPDF`) **deliberadamente adiada** — desenvolvimento ativo nessa área pelo usuário no momento da Wave 4; retomar quando esse trabalho estiver concluído, revalidando a linha de `DocumentoPDF` em `docs/REFACTOR_IMPACT_MATRIX.md` contra o estado atual do código.
 **Branch:** refactor/unified-model-phase1
 **Objetivo:** Eliminar DTOs espelho (Entity + DTO idênticos) e consolidar em uma única classe (Entity com `toDTO()`/`fromDTO()` quando necessário para compatibilidade, mas Controllers/Services passam a trabalhar com a Entity diretamente).
 
@@ -117,6 +117,7 @@ Maquina (raiz)
 Entities: `DocumentoMaquina`, `Avaliacao`, `NotaEstagiario`, `KanbanCard`, `ItemAlmoxarifado`, `MovimentacaoAlmoxarifado`, `VerificacaoAmbiental`, `DocumentoPDF`.
 - Padrão geral (Task 4), aplicado individualmente a cada uma.
 - Caso especial `DocumentoPDF`: remover campos `pastaId`, `nomePasta` do DTO (eram de compatibilidade; com Entity unificada, usar a relação real com `PastaDocumento`).
+- **`DocumentoPDF` (sub-task 13g) foi adiada** (2026-07-01) — usuário estava desenvolvendo ativamente a lógica dessa área no momento da execução da Wave 4. As outras 7 entities desta task (DocumentoMaquina, Avaliacao, NotaEstagiario, KanbanCard, ItemAlmoxarifado, MovimentacaoAlmoxarifado, VerificacaoAmbiental) foram concluídas normalmente. Ao retomar `DocumentoPDF`: `MovimentacaoAlmoxarifado.item` (Task 13e) revelou que qualquer relação `@ManyToOne` LAZY que seja serializada aninhada (não `@JsonIgnore`) quebra o Jackson com um proxy Hibernate não inicializado — verificar se `DocumentoPDF.usuario`/`.subpasta` precisam do mesmo ajuste (fetch EAGER ou `@JsonIgnore`) antes de expor a Entity diretamente.
 
 ---
 
