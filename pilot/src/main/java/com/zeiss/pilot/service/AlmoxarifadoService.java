@@ -61,8 +61,7 @@ public class AlmoxarifadoService {
         }
         ItemAlmoxarifado item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado: " + itemId));
-        int delta = "entrada".equalsIgnoreCase(dto.getTipo()) ? dto.getQuantidade() : -dto.getQuantidade();
-        item.setQuantidadeAtual(Math.max(0, item.getQuantidadeAtual() + delta));
+        item.aplicarMovimentacao(dto.getTipo(), dto.getQuantidade());
         itemRepository.save(item);
 
         MovimentacaoAlmoxarifado m = new MovimentacaoAlmoxarifado();
