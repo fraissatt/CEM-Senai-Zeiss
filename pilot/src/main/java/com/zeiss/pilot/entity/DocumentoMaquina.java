@@ -61,4 +61,21 @@ public class DocumentoMaquina {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    // Deriva o status a partir da data de expiração: sem data = ativo; já expirada = expirado;
+    // vencendo nos próximos 30 dias = prestes a vencer; caso contrário, ativo.
+    public void recalcularStatus() {
+        if (dataExpiracao == null) {
+            this.status = "ativo";
+            return;
+        }
+        LocalDate hoje = LocalDate.now();
+        if (dataExpiracao.isBefore(hoje)) {
+            this.status = "expirado";
+        } else if (!dataExpiracao.isAfter(hoje.plusDays(30))) {
+            this.status = "prestes a vencer";
+        } else {
+            this.status = "ativo";
+        }
+    }
 }

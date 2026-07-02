@@ -64,7 +64,7 @@ public class DocumentoMaquinaService {
         doc.setTipoDocumento(tipoDocumento);
         doc.setDataUpload(LocalDateTime.now());
         doc.setDataExpiracao(dataExpiracao);
-        doc.setStatus(calcularStatus(dataExpiracao));
+        doc.recalcularStatus();
 
         return repository.save(doc);
     }
@@ -72,7 +72,7 @@ public class DocumentoMaquinaService {
     public List<DocumentoMaquina> listar(Long maquinaId) {
         return repository.findByMaquinaIdOrderByDataUploadDesc(maquinaId)
                 .stream()
-                .peek(doc -> doc.setStatus(calcularStatus(doc.getDataExpiracao())))
+                .peek(DocumentoMaquina::recalcularStatus)
                 .collect(Collectors.toList());
     }
 
@@ -99,11 +99,4 @@ public class DocumentoMaquinaService {
                 .body(resource);
     }
 
-    private String calcularStatus(LocalDate dataExpiracao) {
-        if (dataExpiracao == null) return "ativo";
-        LocalDate hoje = LocalDate.now();
-        if (dataExpiracao.isBefore(hoje)) return "expirado";
-        if (!dataExpiracao.isAfter(hoje.plusDays(30))) return "prestes a vencer";
-        return "ativo";
-    }
 }
