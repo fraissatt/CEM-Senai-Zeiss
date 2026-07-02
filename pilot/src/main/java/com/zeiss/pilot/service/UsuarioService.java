@@ -22,16 +22,8 @@ public class UsuarioService {
     }
 
     public Usuario criarUsuario(Usuario usuario) {
-        // Derive security role from organizational cargo
-        if (usuario.getCargo() != null && !usuario.getCargo().equalsIgnoreCase("ESTAGIARIO")) {
-            usuario.setRole("ADMIN");
-        } else {
-            usuario.setRole("CLIENTE");
-        }
-
-        if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
-            throw new IllegalArgumentException("Senha obrigatória para criar usuário");
-        }
+        usuario.derivarRoleDoCargo();
+        usuario.validarSenhaObrigatoria();
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
         return usuarioRepository.save(usuario);
@@ -51,8 +43,7 @@ public class UsuarioService {
 
         if (usuarioAtualizado.getCargo() != null) {
             existente.setCargo(usuarioAtualizado.getCargo());
-            String derivedRole = "ESTAGIARIO".equalsIgnoreCase(usuarioAtualizado.getCargo()) ? "CLIENTE" : "ADMIN";
-            existente.setRole(derivedRole);
+            existente.derivarRoleDoCargo();
         }
 
         if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isBlank()) {

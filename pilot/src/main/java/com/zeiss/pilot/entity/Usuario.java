@@ -61,4 +61,19 @@ public class Usuario {
 
     public LocalDateTime getDataCriacao() { return dataCriacao; }
     public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
+
+    // Deriva o role de segurança a partir do cargo organizacional: ESTAGIARIO (ou sem cargo) = CLIENTE, qualquer outro = ADMIN.
+    public void derivarRoleDoCargo() {
+        if (cargo != null && !cargo.equalsIgnoreCase("ESTAGIARIO")) {
+            this.role = "ADMIN";
+        } else {
+            this.role = "CLIENTE";
+        }
+    }
+
+    public void validarSenhaObrigatoria() {
+        if (senha == null || senha.isBlank()) {
+            throw new IllegalArgumentException("Senha obrigatória para criar usuário");
+        }
+    }
 }
