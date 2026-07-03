@@ -1,5 +1,6 @@
 package com.zeiss.pilot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ public class KanbanCard {
     public void setCriadoEm(LocalDate criadoEm) { this.criadoEm = criadoEm; }
 
     // Um card está vencido se tiver prazo definido, esse prazo já passou, e a coluna não é "concluido".
+    // @JsonIgnore: sem isso, Jackson trataria isVencido() como getter de bean e vazaria um campo "vencido" novo no JSON.
+    @JsonIgnore
     public boolean isVencido() {
         return prazo != null && prazo.isBefore(LocalDate.now()) && !"concluido".equalsIgnoreCase(coluna);
     }
