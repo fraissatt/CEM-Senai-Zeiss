@@ -1,12 +1,10 @@
 package com.zeiss.pilot.service;
 
-import com.zeiss.pilot.dto.AvaliacaoDTO;
 import com.zeiss.pilot.entity.Avaliacao;
 import com.zeiss.pilot.repository.AvaliacaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AvaliacaoService {
@@ -17,14 +15,12 @@ public class AvaliacaoService {
         this.repository = repository;
     }
 
-    public List<AvaliacaoDTO> listar() {
-        return repository.findAll().stream()
-                .map(AvaliacaoDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<Avaliacao> listar() {
+        return repository.findAll();
     }
 
-    public AvaliacaoDTO salvar(AvaliacaoDTO dto) {
-        Avaliacao saved = repository.save(dto.toEntity());
-        return AvaliacaoDTO.fromEntity(saved);
+    public Avaliacao salvar(Avaliacao entity) {
+        entity.setId(null);
+        return repository.save(entity);
     }
 }

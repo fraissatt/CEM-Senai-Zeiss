@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zeiss.pilot.dto.EventoDTO;
 import com.zeiss.pilot.dto.EventoRelatorioDTO;
+import com.zeiss.pilot.entity.Evento;
 import com.zeiss.pilot.service.EventoService;
 
 @RestController
@@ -27,7 +27,7 @@ public class EventoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventoDTO>> getAllEventos() {
+    public ResponseEntity<List<Evento>> getAllEventos() {
         return ResponseEntity.ok(eventoService.getAllEventos());
     }
 
@@ -37,18 +37,18 @@ public class EventoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventoDTO> getEventoById(@PathVariable Long id) {
+    public ResponseEntity<Evento> getEventoById(@PathVariable Long id) {
         return ResponseEntity.ok(eventoService.getEventoById(id));
     }
 
     @PostMapping
-    public ResponseEntity<EventoDTO> createEvento(@RequestBody EventoDTO eventoDTO) {
-        return ResponseEntity.ok(eventoService.createEvento(eventoDTO));
+    public ResponseEntity<Evento> createEvento(@RequestBody Evento evento) {
+        return ResponseEntity.ok(eventoService.createEvento(evento));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EventoDTO> updateEvento(@PathVariable Long id, @RequestBody EventoDTO eventoDTO) {
-        return ResponseEntity.ok(eventoService.updateEvento(id, eventoDTO));
+    public ResponseEntity<Evento> updateEvento(@PathVariable Long id, @RequestBody Evento evento) {
+        return ResponseEntity.ok(eventoService.updateEvento(id, evento));
     }
 
     @DeleteMapping("/{id}")

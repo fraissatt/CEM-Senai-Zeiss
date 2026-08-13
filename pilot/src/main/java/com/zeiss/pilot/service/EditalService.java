@@ -1,11 +1,9 @@
 package com.zeiss.pilot.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.zeiss.pilot.dto.EditalDTO;
 import com.zeiss.pilot.entity.Edital;
 import com.zeiss.pilot.repository.EditalRepository;
 
@@ -18,30 +16,28 @@ public class EditalService {
         this.editalRepository = editalRepository;
     }
 
-    public List<EditalDTO> listarTodos() {
-        return editalRepository.findAll().stream()
-                .map(this::converterParaDTO)
-                .collect(Collectors.toList());
+    public List<Edital> listarTodos() {
+        return editalRepository.findAll();
     }
 
-    public EditalDTO buscarPorId(Long id) {
-        return editalRepository.findById(id)
-                .map(this::converterParaDTO)
-                .orElse(null);
+    public Edital buscarPorId(Long id) {
+        return editalRepository.findById(id).orElse(null);
     }
 
-    public EditalDTO criarEdital(EditalDTO editalDTO) {
-        Edital edital = converterParaEntidade(editalDTO);
-        Edital editalSalvo = editalRepository.save(edital);
-        return converterParaDTO(editalSalvo);
+    public Edital criarEdital(Edital edital) {
+        return editalRepository.save(edital);
     }
 
-    public EditalDTO atualizarEdital(Long id, EditalDTO editalDTO) {
+    public Edital atualizarEdital(Long id, Edital edital) {
         return editalRepository.findById(id)
                 .map(editalExistente -> {
-                    atualizarEntidade(editalExistente, editalDTO);
-                    Edital editalAtualizado = editalRepository.save(editalExistente);
-                    return converterParaDTO(editalAtualizado);
+                    editalExistente.setNomeEdital(edital.getNomeEdital());
+                    editalExistente.setInstituicaoFornecedora(edital.getInstituicaoFornecedora());
+                    editalExistente.setInstituicaoParceira(edital.getInstituicaoParceira());
+                    editalExistente.setStatus(edital.getStatus());
+                    editalExistente.setValor(edital.getValor());
+                    editalExistente.setObservacao(edital.getObservacao());
+                    return editalRepository.save(editalExistente);
                 })
                 .orElseThrow(() -> new RuntimeException("Edital não encontrado com ID: " + id));
     }
@@ -51,37 +47,5 @@ public class EditalService {
             throw new RuntimeException("Edital não encontrado com ID: " + id);
         }
         editalRepository.deleteById(id);
-    }
-
-    private EditalDTO converterParaDTO(Edital edital) {
-        EditalDTO dto = new EditalDTO();
-        dto.setId(edital.getId());
-        dto.setNomeEdital(edital.getNomeEdital());
-        dto.setInstituicaoFornecedora(edital.getInstituicaoFornecedora());
-        dto.setInstituicaoParceira(edital.getInstituicaoParceira());
-        dto.setStatus(edital.getStatus());
-        dto.setValor(edital.getValor());
-        dto.setObservacao(edital.getObservacao());
-        return dto;
-    }
-
-    private Edital converterParaEntidade(EditalDTO dto) {
-        Edital edital = new Edital();
-        edital.setNomeEdital(dto.getNomeEdital());
-        edital.setInstituicaoFornecedora(dto.getInstituicaoFornecedora());
-        edital.setInstituicaoParceira(dto.getInstituicaoParceira());
-        edital.setStatus(dto.getStatus());
-        edital.setValor(dto.getValor());
-        edital.setObservacao(dto.getObservacao());
-        return edital;
-    }
-
-    private void atualizarEntidade(Edital edital, EditalDTO dto) {
-        edital.setNomeEdital(dto.getNomeEdital());
-        edital.setInstituicaoFornecedora(dto.getInstituicaoFornecedora());
-        edital.setInstituicaoParceira(dto.getInstituicaoParceira());
-        edital.setStatus(dto.getStatus());
-        edital.setValor(dto.getValor());
-        edital.setObservacao(dto.getObservacao());
     }
 }

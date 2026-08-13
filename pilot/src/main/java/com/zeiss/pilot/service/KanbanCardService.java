@@ -1,12 +1,11 @@
 package com.zeiss.pilot.service;
 
-import com.zeiss.pilot.dto.KanbanCardDTO;
 import com.zeiss.pilot.entity.KanbanCard;
 import com.zeiss.pilot.repository.KanbanCardRepository;
+import com.zeiss.pilot.util.MapperUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class KanbanCardService {
@@ -17,28 +16,24 @@ public class KanbanCardService {
         this.repository = repository;
     }
 
-    public List<KanbanCardDTO> listar() {
-        return repository.findAll().stream()
-                .map(KanbanCardDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<KanbanCard> listar() {
+        return repository.findAll();
     }
 
-    public List<KanbanCardDTO> listarPorEstagiaria(Long estagiariaId) {
-        return repository.findByEstagiariaId(estagiariaId).stream()
-                .map(KanbanCardDTO::fromEntity)
-                .collect(Collectors.toList());
+    public List<KanbanCard> listarPorEstagiaria(Long estagiariaId) {
+        return repository.findByEstagiariaId(estagiariaId);
     }
 
-    public KanbanCardDTO salvar(KanbanCardDTO dto) {
-        return KanbanCardDTO.fromEntity(repository.save(dto.toEntity()));
+    public KanbanCard salvar(KanbanCard card) {
+        card.setId(null);
+        return repository.save(card);
     }
 
-    public KanbanCardDTO atualizar(Long id, KanbanCardDTO dto) {
-        repository.findById(id)
+    public KanbanCard atualizar(Long id, KanbanCard card) {
+        KanbanCard existente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Card não encontrado: " + id));
-        KanbanCard entity = dto.toEntity();
-        entity.setId(id);
-        return KanbanCardDTO.fromEntity(repository.save(entity));
+        MapperUtil.copyNonNullProperties(card, existente);
+        return repository.save(existente);
     }
 
     public void deletar(Long id) {

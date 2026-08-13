@@ -1,5 +1,6 @@
 package com.zeiss.pilot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,8 +13,11 @@ public class DocumentoMaquina {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Ignorado no JSON: evita ciclo com Maquina e é redundante, já que
+    // o endpoint aninhado (/api/maquinas/{maquinaId}/documentos) já informa a máquina via URL.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maquina_id", nullable = false)
+    @JsonIgnore
     private Maquina maquina;
 
     @Column(name = "nome_arquivo", nullable = false)
@@ -57,4 +61,21 @@ public class DocumentoMaquina {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    // Deriva o status a partir da data de expiração: sem data = ativo; já expirada = expirado;
+    // vencendo nos próximos 30 dias = prestes a vencer; caso contrário, ativo.
+    public void recalcularStatus() {
+        if (dataExpiracao == null) {
+            this.status = "ativo";
+            return;
+        }
+        LocalDate hoje = LocalDate.now();
+        if (dataExpiracao.isBefore(hoje)) {
+            this.status = "expirado";
+        } else if (!dataExpiracao.isAfter(hoje.plusDays(30))) {
+            this.status = "prestes a vencer";
+        } else {
+            this.status = "ativo";
+        }
+    }
 }

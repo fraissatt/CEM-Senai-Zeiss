@@ -83,4 +83,10 @@ public class Evento {
     public void setNumeroParticipantes(Integer numeroParticipantes) { this.numeroParticipantes = numeroParticipantes; }
     public String getObservacao() { return observacao; }
     public void setObservacao(String observacao) { this.observacao = observacao; }
+
+    // Aliases mantidos para compatibilidade com o frontend (antigo EventoDTO)
+    public String getTitulo() { return this.nome; }
+    public void setTitulo(String titulo) { this.nome = titulo; }
+    public LocalDate getData() { return this.dataEvento; }
+    public void setData(LocalDate data) { this.dataEvento = data; }
 }

@@ -38,7 +38,7 @@ const ProjetosModule = (() => {
       (!q  || (p.nomeProjeto||'').toLowerCase().includes(q)) &&
       (!st || p.status === st) &&
       (!pr || p.prioridade === pr) &&
-      (!re || String(p.responsavelId) === re)
+      (!re || String(p.responsavel?.id ?? '') === re)
     );
   }
 
@@ -61,7 +61,7 @@ const ProjetosModule = (() => {
     tbody.innerHTML = page.map(p => `
       <tr>
         <td class="table-cell--strong">${p.nomeProjeto || '—'}</td>
-        <td class="table-cell--muted">${p.responsavelNome || p.responsavel || '—'}</td>
+        <td class="table-cell--muted">${p.responsavel?.nome || '—'}</td>
         <td>${StatusBadge.prioridade(p.prioridade)}</td>
         <td class="perm-financial">${Fmt?.currency(p.custoAnualPrevisto) || p.custoAnualPrevisto || '—'}</td>
         <td class="perm-financial">${Fmt?.currency(p.retornoPrevisto) || p.retornoPrevisto || '—'}</td>
@@ -105,7 +105,7 @@ const ProjetosModule = (() => {
       document.getElementById('nomeProjeto').value    = p.nomeProjeto || '';
       document.getElementById('objetivo').value       = p.objetivo || '';
       document.getElementById('atividades').value     = p.atividades || '';
-      document.getElementById('responsavelId').value  = p.responsavelId || '';
+      document.getElementById('responsavelId').value  = p.responsavel?.id || '';
       document.getElementById('prioridade').value     = p.prioridade || 'Alta';
       document.getElementById('custoAnualPrevisto').value = p.custoAnualPrevisto || '';
       document.getElementById('retornoPrevisto').value    = p.retornoPrevisto || '';
@@ -127,11 +127,13 @@ const ProjetosModule = (() => {
 
     const id = document.getElementById('projetoId').value;
     const parseDecimal = v => { const n = parseFloat(String(v).trim()); return isNaN(n) ? null : n; };
+    const responsavelIdVal = document.getElementById('responsavelId').value;
+    const responsavelId = responsavelIdVal ? parseInt(responsavelIdVal) : null;
     const payload = {
       nomeProjeto:      document.getElementById('nomeProjeto').value.trim(),
       objetivo:         document.getElementById('objetivo').value.trim(),
       atividades:       document.getElementById('atividades').value.trim(),
-      responsavelId:    parseInt(document.getElementById('responsavelId').value) || null,
+      responsavel:      responsavelId ? { id: responsavelId } : null,
       prioridade:       document.getElementById('prioridade').value,
       custoAnualPrevisto: parseDecimal(document.getElementById('custoAnualPrevisto').value),
       retornoPrevisto:  parseDecimal(document.getElementById('retornoPrevisto').value),

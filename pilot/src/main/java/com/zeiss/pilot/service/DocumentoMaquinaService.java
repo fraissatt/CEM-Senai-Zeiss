@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.zeiss.pilot.dto.DocumentoMaquinaDTO;
 import com.zeiss.pilot.entity.DocumentoMaquina;
 import com.zeiss.pilot.entity.Maquina;
 import com.zeiss.pilot.repository.DocumentoMaquinaRepository;
@@ -44,7 +43,7 @@ public class DocumentoMaquinaService {
     }
 
     @Transactional
-    public DocumentoMaquinaDTO upload(MultipartFile file, Long maquinaId,
+    public DocumentoMaquina upload(MultipartFile file, Long maquinaId,
                                       LocalDate dataExpiracao, String tipoDocumento) throws IOException {
         Maquina maquina = maquinaRepository.findById(maquinaId)
                 .orElseThrow(() -> new IllegalArgumentException("Máquina não encontrada: " + maquinaId));
@@ -65,16 +64,15 @@ public class DocumentoMaquinaService {
         doc.setTipoDocumento(tipoDocumento);
         doc.setDataUpload(LocalDateTime.now());
         doc.setDataExpiracao(dataExpiracao);
-        doc.setStatus(calcularStatus(dataExpiracao));
+        doc.recalcularStatus();
 
-        return toDTO(repository.save(doc));
+        return repository.save(doc);
     }
 
-    public List<DocumentoMaquinaDTO> listar(Long maquinaId) {
+    public List<DocumentoMaquina> listar(Long maquinaId) {
         return repository.findByMaquinaIdOrderByDataUploadDesc(maquinaId)
                 .stream()
-                .peek(doc -> doc.setStatus(calcularStatus(doc.getDataExpiracao())))
-                .map(this::toDTO)
+                .peek(DocumentoMaquina::recalcularStatus)
                 .collect(Collectors.toList());
     }
 
@@ -101,23 +99,4 @@ public class DocumentoMaquinaService {
                 .body(resource);
     }
 
-    private String calcularStatus(LocalDate dataExpiracao) {
-        if (dataExpiracao == null) return "ativo";
-        LocalDate hoje = LocalDate.now();
-        if (dataExpiracao.isBefore(hoje)) return "expirado";
-        if (!dataExpiracao.isAfter(hoje.plusDays(30))) return "prestes a vencer";
-        return "ativo";
-    }
-
-    private DocumentoMaquinaDTO toDTO(DocumentoMaquina doc) {
-        DocumentoMaquinaDTO dto = new DocumentoMaquinaDTO();
-        dto.setId(doc.getId());
-        dto.setMaquinaId(doc.getMaquina() != null ? doc.getMaquina().getId() : null);
-        dto.setNomeArquivo(doc.getNomeArquivo());
-        dto.setTipoDocumento(doc.getTipoDocumento());
-        dto.setDataUpload(doc.getDataUpload());
-        dto.setDataExpiracao(doc.getDataExpiracao());
-        dto.setStatus(doc.getStatus());
-        return dto;
-    }
 }

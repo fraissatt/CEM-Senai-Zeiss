@@ -1,6 +1,6 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.NotaEstagiarioDTO;
+import com.zeiss.pilot.entity.NotaEstagiario;
 import com.zeiss.pilot.service.NotaEstagiarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class NotaEstagiarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NotaEstagiarioDTO>> listar(
+    public ResponseEntity<List<NotaEstagiario>> listar(
             @RequestParam(required = false) Long estagiariaId) {
         if (estagiariaId != null) {
             return ResponseEntity.ok(service.listarPorEstagiaria(estagiariaId));
@@ -27,7 +27,7 @@ public class NotaEstagiarioController {
     }
 
     @PostMapping
-    public ResponseEntity<NotaEstagiarioDTO> criar(@RequestBody NotaEstagiarioDTO dto) {
-        return ResponseEntity.ok(service.salvar(dto));
+    public ResponseEntity<NotaEstagiario> criar(@RequestBody NotaEstagiario nota) {
+        return ResponseEntity.ok(service.salvar(nota));
     }
 }

@@ -63,4 +63,14 @@ public class PastaDocumento {
 
     public List<PastaDocumento> getSubpastas() { return subpastas; }
     public void setSubpastas(List<PastaDocumento> subpastas) { this.subpastas = subpastas; }
+
+    // Impede a exclusão de uma pasta que ainda tenha subpastas ou documentos vinculados.
+    public void validarExclusao() {
+        if (!subpastas.isEmpty()) {
+            throw new IllegalStateException("Exclusão bloqueada: existem subpastas.");
+        }
+        if (!documentos.isEmpty()) {
+            throw new IllegalStateException("Exclusão bloqueada: existem documentos vinculados.");
+        }
+    }
 }

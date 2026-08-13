@@ -1,6 +1,5 @@
 package com.zeiss.pilot.service;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +49,7 @@ public class DashboardEstagiarioService {
             int vencidas = 0;
             for (KanbanCard c : cards) {
                 porColuna.merge(c.getColuna(), 1, Integer::sum);
-                if (c.getPrazo() != null && c.getPrazo().isBefore(LocalDate.now())
-                        && !"concluido".equalsIgnoreCase(c.getColuna())) {
+                if (c.isVencido()) {
                     vencidas++;
                 }
             }

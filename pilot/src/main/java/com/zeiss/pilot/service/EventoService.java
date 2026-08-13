@@ -1,14 +1,13 @@
 package com.zeiss.pilot.service;
 
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.zeiss.pilot.dto.EventoDTO;
 import com.zeiss.pilot.dto.EventoRelatorioDTO;
 import com.zeiss.pilot.entity.Evento;
 import com.zeiss.pilot.repository.EventoRepository;
@@ -22,40 +21,36 @@ public class EventoService {
         this.eventoRepository = eventoRepository;
     }
 
-    public List<EventoDTO> getAllEventos() {
-        return eventoRepository.findAll()
-                               .stream()
-                               .map(EventoDTO::fromEntity)
-                               .collect(Collectors.toList());
+    public List<Evento> getAllEventos() {
+        return eventoRepository.findAll();
     }
 
-    public EventoDTO getEventoById(Long id) {
+    public Evento getEventoById(Long id) {
         return eventoRepository.findById(id)
-                .map(EventoDTO::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado com id: " + id));
     }
 
-    public EventoDTO createEvento(EventoDTO eventoDTO) {
-        Evento evento = eventoDTO.toEntity();
-        evento = eventoRepository.save(evento);
-        return EventoDTO.fromEntity(evento);
+    public Evento createEvento(Evento evento) {
+        if (evento.getNome() == null) evento.setNome("");
+        evento.setTipo("Geral");
+        if (evento.getDataEvento() == null) evento.setDataEvento(LocalDate.now());
+        return eventoRepository.save(evento);
     }
 
-    public EventoDTO updateEvento(Long id, EventoDTO eventoDTO) {
+    public Evento updateEvento(Long id, Evento dados) {
         Evento evento = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado com id: " + id));
 
-        if (eventoDTO.getTitulo() != null) evento.setNome(eventoDTO.getTitulo());
-        if (eventoDTO.getData() != null)   evento.setDataEvento(eventoDTO.getData());
-        evento.setDescricao(eventoDTO.getDescricao());
-        evento.setHorario(eventoDTO.getHorario());
-        evento.setLocal(eventoDTO.getLocal());
-        evento.setResponsavel(eventoDTO.getResponsavel());
-        evento.setNumeroParticipantes(eventoDTO.getNumeroParticipantes());
-        evento.setObservacao(eventoDTO.getObservacao());
+        if (dados.getNome() != null) evento.setNome(dados.getNome());
+        if (dados.getDataEvento() != null) evento.setDataEvento(dados.getDataEvento());
+        evento.setDescricao(dados.getDescricao());
+        evento.setHorario(dados.getHorario());
+        evento.setLocal(dados.getLocal());
+        evento.setResponsavel(dados.getResponsavel());
+        evento.setNumeroParticipantes(dados.getNumeroParticipantes());
+        evento.setObservacao(dados.getObservacao());
 
-        evento = eventoRepository.save(evento);
-        return EventoDTO.fromEntity(evento);
+        return eventoRepository.save(evento);
     }
 
     public void deleteEvento(Long id) {

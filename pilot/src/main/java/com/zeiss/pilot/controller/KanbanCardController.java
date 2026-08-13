@@ -1,6 +1,6 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.KanbanCardDTO;
+import com.zeiss.pilot.entity.KanbanCard;
 import com.zeiss.pilot.service.KanbanCardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class KanbanCardController {
     }
 
     @GetMapping
-    public ResponseEntity<List<KanbanCardDTO>> listar(
+    public ResponseEntity<List<KanbanCard>> listar(
             @RequestParam(required = false) Long estagiariaId) {
         if (estagiariaId != null) {
             return ResponseEntity.ok(service.listarPorEstagiaria(estagiariaId));
@@ -27,13 +27,13 @@ public class KanbanCardController {
     }
 
     @PostMapping
-    public ResponseEntity<KanbanCardDTO> criar(@RequestBody KanbanCardDTO dto) {
-        return ResponseEntity.ok(service.salvar(dto));
+    public ResponseEntity<KanbanCard> criar(@RequestBody KanbanCard card) {
+        return ResponseEntity.ok(service.salvar(card));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<KanbanCardDTO> atualizar(@PathVariable Long id, @RequestBody KanbanCardDTO dto) {
-        return ResponseEntity.ok(service.atualizar(id, dto));
+    public ResponseEntity<KanbanCard> atualizar(@PathVariable Long id, @RequestBody KanbanCard card) {
+        return ResponseEntity.ok(service.atualizar(id, card));
     }
 
     @DeleteMapping("/{id}")

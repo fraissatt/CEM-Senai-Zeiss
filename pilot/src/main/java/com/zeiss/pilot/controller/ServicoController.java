@@ -1,6 +1,6 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.ServicoDTO;
+import com.zeiss.pilot.entity.Servico;
 import com.zeiss.pilot.service.ServicoService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class ServicoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ServicoDTO>> listarServicos(
+    public ResponseEntity<Page<Servico>> listarServicos(
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false)    String query,
@@ -26,18 +26,18 @@ public class ServicoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServicoDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Servico> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(servicoService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<ServicoDTO> criarServico(@RequestBody ServicoDTO dto) {
-        return ResponseEntity.ok(servicoService.criarServico(dto));
+    public ResponseEntity<Servico> criarServico(@RequestBody Servico servico) {
+        return ResponseEntity.ok(servicoService.criarServico(servico));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServicoDTO> atualizarServico(@PathVariable Long id, @RequestBody ServicoDTO dto) {
-        return ResponseEntity.ok(servicoService.atualizarServico(id, dto));
+    public ResponseEntity<Servico> atualizarServico(@PathVariable Long id, @RequestBody Servico servico) {
+        return ResponseEntity.ok(servicoService.atualizarServico(id, servico));
     }
 
     @DeleteMapping("/{id}")

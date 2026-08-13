@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zeiss.pilot.dto.ProjetoDTO;
+import com.zeiss.pilot.entity.Projeto;
 import com.zeiss.pilot.service.ProjetoService;
 
 @RestController
@@ -27,24 +27,24 @@ public class ProjetoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProjetoDTO>> listarProjetos() {
+    public ResponseEntity<List<Projeto>> listarProjetos() {
         return ResponseEntity.ok(projetoService.listarProjetos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjetoDTO> buscarPorId(@PathVariable Long id) {
-        Optional<ProjetoDTO> projeto = projetoService.buscarPorId(id);
+    public ResponseEntity<Projeto> buscarPorId(@PathVariable Long id) {
+        Optional<Projeto> projeto = projetoService.buscarPorId(id);
         return projeto.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ProjetoDTO> criarProjeto(@RequestBody ProjetoDTO dto) {
-        return ResponseEntity.ok(projetoService.criarProjeto(dto));
+    public ResponseEntity<Projeto> criarProjeto(@RequestBody Projeto projeto) {
+        return ResponseEntity.ok(projetoService.criarProjeto(projeto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProjetoDTO> atualizarProjeto(@PathVariable Long id, @RequestBody ProjetoDTO dto) {
-        ProjetoDTO atualizado = projetoService.atualizarProjeto(id, dto);
+    public ResponseEntity<Projeto> atualizarProjeto(@PathVariable Long id, @RequestBody Projeto projeto) {
+        Projeto atualizado = projetoService.atualizarProjeto(id, projeto);
         return (atualizado != null) ? ResponseEntity.ok(atualizado) : ResponseEntity.notFound().build();
     }
 

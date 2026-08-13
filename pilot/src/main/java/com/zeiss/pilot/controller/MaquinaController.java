@@ -1,9 +1,9 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.AgendamentoMaquinaDTO;
-import com.zeiss.pilot.dto.ManutencaoMaquinaDTO;
-import com.zeiss.pilot.dto.MaquinaDTO;
-import com.zeiss.pilot.dto.SessaoMaquinaDTO;
+import com.zeiss.pilot.entity.AgendamentoMaquina;
+import com.zeiss.pilot.entity.Maquina;
+import com.zeiss.pilot.entity.ManutencaoMaquina;
+import com.zeiss.pilot.entity.SessaoMaquina;
 import com.zeiss.pilot.service.MaquinaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,23 +21,23 @@ public class MaquinaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MaquinaDTO>> listar() {
+    public ResponseEntity<List<Maquina>> listar() {
         return ResponseEntity.ok(service.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MaquinaDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Maquina> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<MaquinaDTO> criar(@RequestBody MaquinaDTO dto) {
-        return ResponseEntity.ok(service.salvar(dto));
+    public ResponseEntity<Maquina> criar(@RequestBody Maquina maquina) {
+        return ResponseEntity.ok(service.salvar(maquina));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MaquinaDTO> atualizar(@PathVariable Long id, @RequestBody MaquinaDTO dto) {
-        return ResponseEntity.ok(service.atualizar(id, dto));
+    public ResponseEntity<Maquina> atualizar(@PathVariable Long id, @RequestBody Maquina maquina) {
+        return ResponseEntity.ok(service.atualizar(id, maquina));
     }
 
     @DeleteMapping("/{id}")
@@ -49,21 +49,21 @@ public class MaquinaController {
     // Sessões
 
     @GetMapping("/{maquinaId}/sessoes")
-    public ResponseEntity<List<SessaoMaquinaDTO>> listarSessoes(@PathVariable Long maquinaId) {
+    public ResponseEntity<List<SessaoMaquina>> listarSessoes(@PathVariable Long maquinaId) {
         return ResponseEntity.ok(service.listarSessoes(maquinaId));
     }
 
     @PostMapping("/{maquinaId}/sessoes")
-    public ResponseEntity<SessaoMaquinaDTO> criarSessao(@PathVariable Long maquinaId,
-                                                         @RequestBody SessaoMaquinaDTO dto) {
-        return ResponseEntity.ok(service.criarSessao(maquinaId, dto));
+    public ResponseEntity<SessaoMaquina> criarSessao(@PathVariable Long maquinaId,
+                                                       @RequestBody SessaoMaquina sessao) {
+        return ResponseEntity.ok(service.criarSessao(maquinaId, sessao));
     }
 
     @PatchMapping("/{maquinaId}/sessoes/{id}")
-    public ResponseEntity<SessaoMaquinaDTO> atualizarSessao(@PathVariable Long maquinaId,
-                                                              @PathVariable Long id,
-                                                              @RequestBody SessaoMaquinaDTO dto) {
-        return ResponseEntity.ok(service.atualizarSessao(id, dto));
+    public ResponseEntity<SessaoMaquina> atualizarSessao(@PathVariable Long maquinaId,
+                                                           @PathVariable Long id,
+                                                           @RequestBody SessaoMaquina sessao) {
+        return ResponseEntity.ok(service.atualizarSessao(id, sessao));
     }
 
     @DeleteMapping("/{maquinaId}/sessoes/{id}")
@@ -75,21 +75,21 @@ public class MaquinaController {
     // Manutenções
 
     @GetMapping("/{maquinaId}/manutencoes")
-    public ResponseEntity<List<ManutencaoMaquinaDTO>> listarManutencoes(@PathVariable Long maquinaId) {
+    public ResponseEntity<List<ManutencaoMaquina>> listarManutencoes(@PathVariable Long maquinaId) {
         return ResponseEntity.ok(service.listarManutencoes(maquinaId));
     }
 
     @PostMapping("/{maquinaId}/manutencoes")
-    public ResponseEntity<ManutencaoMaquinaDTO> criarManutencao(@PathVariable Long maquinaId,
-                                                                  @RequestBody ManutencaoMaquinaDTO dto) {
-        return ResponseEntity.ok(service.criarManutencao(maquinaId, dto));
+    public ResponseEntity<ManutencaoMaquina> criarManutencao(@PathVariable Long maquinaId,
+                                                                @RequestBody ManutencaoMaquina manutencao) {
+        return ResponseEntity.ok(service.criarManutencao(maquinaId, manutencao));
     }
 
     @PatchMapping("/{maquinaId}/manutencoes/{id}")
-    public ResponseEntity<ManutencaoMaquinaDTO> atualizarManutencao(@PathVariable Long maquinaId,
-                                                                      @PathVariable Long id,
-                                                                      @RequestBody ManutencaoMaquinaDTO dto) {
-        return ResponseEntity.ok(service.atualizarManutencao(id, dto));
+    public ResponseEntity<ManutencaoMaquina> atualizarManutencao(@PathVariable Long maquinaId,
+                                                                    @PathVariable Long id,
+                                                                    @RequestBody ManutencaoMaquina manutencao) {
+        return ResponseEntity.ok(service.atualizarManutencao(id, manutencao));
     }
 
     @DeleteMapping("/{maquinaId}/manutencoes/{id}")
@@ -101,21 +101,21 @@ public class MaquinaController {
     // Agendamentos
 
     @GetMapping("/{maquinaId}/agendamentos")
-    public ResponseEntity<List<AgendamentoMaquinaDTO>> listarAgendamentos(@PathVariable Long maquinaId) {
+    public ResponseEntity<List<AgendamentoMaquina>> listarAgendamentos(@PathVariable Long maquinaId) {
         return ResponseEntity.ok(service.listarAgendamentos(maquinaId));
     }
 
     @PostMapping("/{maquinaId}/agendamentos")
-    public ResponseEntity<AgendamentoMaquinaDTO> criarAgendamento(@PathVariable Long maquinaId,
-                                                                    @RequestBody AgendamentoMaquinaDTO dto) {
-        return ResponseEntity.ok(service.criarAgendamento(maquinaId, dto));
+    public ResponseEntity<AgendamentoMaquina> criarAgendamento(@PathVariable Long maquinaId,
+                                                                  @RequestBody AgendamentoMaquina agendamento) {
+        return ResponseEntity.ok(service.criarAgendamento(maquinaId, agendamento));
     }
 
     @PatchMapping("/{maquinaId}/agendamentos/{id}")
-    public ResponseEntity<AgendamentoMaquinaDTO> atualizarAgendamento(@PathVariable Long maquinaId,
-                                                                        @PathVariable Long id,
-                                                                        @RequestBody AgendamentoMaquinaDTO dto) {
-        return ResponseEntity.ok(service.atualizarAgendamento(id, dto));
+    public ResponseEntity<AgendamentoMaquina> atualizarAgendamento(@PathVariable Long maquinaId,
+                                                                      @PathVariable Long id,
+                                                                      @RequestBody AgendamentoMaquina agendamento) {
+        return ResponseEntity.ok(service.atualizarAgendamento(id, agendamento));
     }
 
     @DeleteMapping("/{maquinaId}/agendamentos/{id}")

@@ -40,4 +40,10 @@ public class ItemAlmoxarifado {
     public void setLocalizacao(String localizacao) { this.localizacao = localizacao; }
     public String getObservacao() { return observacao; }
     public void setObservacao(String observacao) { this.observacao = observacao; }
+
+    // Ajusta o estoque conforme o tipo de movimentação ("entrada" soma, qualquer outro valor subtrai), sem permitir valor negativo.
+    public void aplicarMovimentacao(String tipo, int quantidade) {
+        int delta = "entrada".equalsIgnoreCase(tipo) ? quantidade : -quantidade;
+        this.quantidadeAtual = Math.max(0, this.quantidadeAtual + delta);
+    }
 }

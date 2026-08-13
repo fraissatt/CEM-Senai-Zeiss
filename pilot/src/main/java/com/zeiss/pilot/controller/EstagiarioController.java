@@ -1,6 +1,6 @@
 package com.zeiss.pilot.controller;
 
-import com.zeiss.pilot.dto.EstagiarioDTO;
+import com.zeiss.pilot.entity.Estagiario;
 import com.zeiss.pilot.service.EstagiarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class EstagiarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EstagiarioDTO>> listar(
+    public ResponseEntity<List<Estagiario>> listar(
             @RequestParam(required = false, defaultValue = "false") boolean apenasAtivos) {
         if (apenasAtivos) {
             return ResponseEntity.ok(service.listarAtivos());
@@ -27,18 +27,18 @@ public class EstagiarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EstagiarioDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Estagiario> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<EstagiarioDTO> criar(@RequestBody EstagiarioDTO dto) {
-        return ResponseEntity.ok(service.salvar(dto));
+    public ResponseEntity<Estagiario> criar(@RequestBody Estagiario estagiario) {
+        return ResponseEntity.ok(service.salvar(estagiario));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<EstagiarioDTO> atualizar(@PathVariable Long id, @RequestBody EstagiarioDTO dto) {
-        return ResponseEntity.ok(service.atualizar(id, dto));
+    public ResponseEntity<Estagiario> atualizar(@PathVariable Long id, @RequestBody Estagiario estagiario) {
+        return ResponseEntity.ok(service.atualizar(id, estagiario));
     }
 
     @DeleteMapping("/{id}")

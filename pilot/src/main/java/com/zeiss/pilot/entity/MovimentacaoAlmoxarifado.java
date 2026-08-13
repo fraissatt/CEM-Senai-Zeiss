@@ -11,7 +11,7 @@ public class MovimentacaoAlmoxarifado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private ItemAlmoxarifado item;
 
