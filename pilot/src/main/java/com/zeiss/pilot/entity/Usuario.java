@@ -29,7 +29,7 @@ public class Usuario {
     private String senha;
 
     @Column(nullable = false, length = 50)
-    private String role = "CLIENTE";
+    private String role = "ESTAGIARIO";
 
     @Column(length = 50)
     private String cargo;
@@ -62,12 +62,15 @@ public class Usuario {
     public LocalDateTime getDataCriacao() { return dataCriacao; }
     public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
 
-    // Deriva o role de segurança a partir do cargo organizacional: ESTAGIARIO (ou sem cargo) = CLIENTE, qualquer outro = ADMIN.
+    // Deriva o role de segurança a partir do cargo organizacional:
+    // GESTOR = TECNICO, ESTAGIARIO (ou sem cargo) = ESTAGIARIO, qualquer outro (ex.: DIRETOR_CEM) = ADMIN.
     public void derivarRoleDoCargo() {
-        if (cargo != null && !cargo.equalsIgnoreCase("ESTAGIARIO")) {
-            this.role = "ADMIN";
+        if (cargo == null || cargo.equalsIgnoreCase("ESTAGIARIO")) {
+            this.role = "ESTAGIARIO";
+        } else if (cargo.equalsIgnoreCase("GESTOR")) {
+            this.role = "TECNICO";
         } else {
-            this.role = "CLIENTE";
+            this.role = "ADMIN";
         }
     }
 

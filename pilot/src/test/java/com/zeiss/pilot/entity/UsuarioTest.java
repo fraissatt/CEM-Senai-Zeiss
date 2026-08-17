@@ -9,29 +9,39 @@ import org.junit.jupiter.api.Test;
 class UsuarioTest {
 
     @Test
-    void derivarRoleDoCargo_semCargo_viraCliente() {
+    void derivarRoleDoCargo_semCargo_viraEstagiario() {
         Usuario usuario = new Usuario();
         usuario.setCargo(null);
 
         usuario.derivarRoleDoCargo();
 
-        assertEquals("CLIENTE", usuario.getRole());
+        assertEquals("ESTAGIARIO", usuario.getRole());
     }
 
     @Test
-    void derivarRoleDoCargo_estagiario_viraCliente() {
+    void derivarRoleDoCargo_estagiario_viraEstagiario() {
         Usuario usuario = new Usuario();
         usuario.setCargo("estagiario");
 
         usuario.derivarRoleDoCargo();
 
-        assertEquals("CLIENTE", usuario.getRole());
+        assertEquals("ESTAGIARIO", usuario.getRole());
     }
 
     @Test
-    void derivarRoleDoCargo_outroCargo_viraAdmin() {
+    void derivarRoleDoCargo_gestor_viraTecnico() {
         Usuario usuario = new Usuario();
-        usuario.setCargo("Gerente");
+        usuario.setCargo("GESTOR");
+
+        usuario.derivarRoleDoCargo();
+
+        assertEquals("TECNICO", usuario.getRole());
+    }
+
+    @Test
+    void derivarRoleDoCargo_diretorCem_viraAdmin() {
+        Usuario usuario = new Usuario();
+        usuario.setCargo("DIRETOR_CEM");
 
         usuario.derivarRoleDoCargo();
 
