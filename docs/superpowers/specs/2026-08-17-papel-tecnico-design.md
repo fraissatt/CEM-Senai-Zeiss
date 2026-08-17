@@ -53,6 +53,14 @@ Posicionadas antes do fallback genérico `.requestMatchers("/api/**").authentica
 
 `CustomUserDetailsService` já monta a authority como `"ROLE_" + usuario.getRole()` de forma genérica (não hardcoded pra ADMIN/CLIENTE) — nenhuma mudança necessária ali para o novo valor `TECNICO` funcionar com `hasAnyRole`.
 
+**Escopo do wildcard `/api/maquinas/**` confirmado deliberadamente amplo:** o padrão também cobre os sub-endpoints aninhados de sessões (`/{id}/sessoes`), manutenções (`/{id}/manutencoes`) e agendamentos (`/{id}/agendamentos`) — não só o CRUD da máquina em si. Isso significa que `ESTAGIARIO` também fica bloqueado (403) de registrar sessão de uso (ligar/desligar máquina) e de criar agendamento, mesmo que o frontend (`Auth.PERMS` em `core.js`) hoje conceda `create: true` pra `ESTAGIARIO` nessas ações. Achado pela revisão final do branch (2026-08-17) e confirmado com o usuário: comportamento mantido como está — bloqueado — por ser a leitura literal correta do padrão que este spec já pedia, não uma regressão a corrigir.
+
+## Limitação conhecida: role não é recalculada no login
+
+`derivarRoleDoCargo()` só roda em `UsuarioService.criarUsuario()` e `atualizarUsuario()` — nunca em `CustomUserDetailsService.loadUserByUsername()`. Ou seja, a coluna `role` gravada no banco é o que vale no login, não um valor recalculado a cada vez a partir do `cargo`.
+
+Isso significa que qualquer usuário cujo `cargo` mude (ou cujo `role` tenha sido gravado por uma versão anterior desta lógica) só recebe a role correta na próxima vez que for salvo pela tela de Usuários — não automaticamente. Achado pela revisão final do branch (2026-08-17); confirmado com o usuário que o banco de dev atual tem só 2 usuários, ambos já `ADMIN` (papel que não muda nesta revisão), então não há nenhuma linha afetada agora. Decisão: documentar como limitação conhecida, sem mudança de código — se este sistema ganhar uma base de usuários maior antes de produção, ou se um `GESTOR` for cadastrado por fora do fluxo normal do app, vale revisitar (opção mais robusta: mover a chamada de `derivarRoleDoCargo()` pra dentro de `CustomUserDetailsService`, tornando a coluna um cache em vez de fonte da verdade).
+
 ## Fora de escopo
 
 - **`Auth` em `core.js`** (sistema de permissões do frontend, menu lateral, badges): `Auth.set()` nunca é chamado em lugar nenhum do código — o módulo sempre cai no default hardcoded `'GESTOR'`, independente de quem faz login. É um bug pré-existente, não introduzido nem agravado por este trabalho. O critério de pronto do backlog é especificamente sobre backend (`SecurityConfig`/`@PreAuthorize`), então fica de fora aqui.
