@@ -301,49 +301,57 @@ function setAvatarInitials() {
 }
 
 /* ── Auth / Role System ── */
+// Fonte da verdade: atributos data-user-* renderizados pelo servidor na tag <body>
+// (ver UsuarioAtualAdvice.java). Nao usa sessionStorage de proposito: dado de sessao
+// sobreviveria a troca de usuario na mesma aba, fazendo a role do primeiro valer
+// para o segundo.
 const Auth = (() => {
-  const KEY  = 'zp-role';
-  const UKEY = 'zp-user';
 
   const ROLES = {
-    ESTAGIARIO:  'Estagiário',
-    GESTOR:      'Gestor',
-    DIRETOR_CEM: 'Diretor do CEM',
+    ESTAGIARIO: 'Estagiário',
+    TECNICO:    'Técnico',
+    ADMIN:      'Administrador',
   };
 
   const PERMS = {
-    ESTAGIARIO:  { delete: false, edit: false, viewFinancial: false, viewEditais: false, viewDocumentos: false, viewUsuarios: false, create: true  },
-    GESTOR:      { delete: true,  edit: true,  viewFinancial: true,  viewEditais: true,  viewDocumentos: true,  viewUsuarios: false, create: true  },
-    DIRETOR_CEM: { delete: true,  edit: true,  viewFinancial: true,  viewEditais: true,  viewDocumentos: true,  viewUsuarios: true,  create: true  },
+    ESTAGIARIO: { delete: false, edit: false, viewFinancial: false, viewEditais: false, viewDocumentos: false, viewUsuarios: false, create: true  },
+    TECNICO:    { delete: true,  edit: true,  viewFinancial: true,  viewEditais: true,  viewDocumentos: true,  viewUsuarios: false, create: true  },
+    ADMIN:      { delete: true,  edit: true,  viewFinancial: true,  viewEditais: true,  viewDocumentos: true,  viewUsuarios: true,  create: true  },
   };
 
+  // Comparado com window.location.pathname, que pode ser qualquer apelido de rota —
+  // por isso lista /lista-editais e /detalhes-edital alem das rotas canonicas.
   const PAGE_ROLES = {
-    '/editais/lista':    ['GESTOR', 'DIRETOR_CEM'],
-    '/editais/detalhes': ['GESTOR', 'DIRETOR_CEM'],
-    '/documentos':       ['GESTOR', 'DIRETOR_CEM'],
-    '/usuarios':         ['DIRETOR_CEM'],
+    '/editais/lista':   ['TECNICO', 'ADMIN'],
+    '/lista-editais':   ['TECNICO', 'ADMIN'],
+    '/detalhes-edital': ['TECNICO', 'ADMIN'],
+    '/documentos':      ['TECNICO', 'ADMIN'],
+    '/usuarios':        ['ADMIN'],
   };
 
+  // Comparado com o atributo href dos itens da sidebar, que usa so' rotas canonicas.
   const NAV_ROLES = {
-    '/editais/lista': ['GESTOR', 'DIRETOR_CEM'],
-    '/documentos':    ['GESTOR', 'DIRETOR_CEM'],
-    '/usuarios':      ['DIRETOR_CEM'],
+    '/editais/lista': ['TECNICO', 'ADMIN'],
+    '/documentos':    ['TECNICO', 'ADMIN'],
+    '/usuarios':      ['ADMIN'],
   };
 
   const ROLE_COLORS = {
-    ESTAGIARIO:  '#6b7280',
-    GESTOR:      '#2563eb',
-    DIRETOR_CEM: '#7c3aed',
+    ESTAGIARIO: '#6b7280',
+    TECNICO:    '#2563eb',
+    ADMIN:      '#7c3aed',
   };
 
-  function role() { return sessionStorage.getItem(KEY) || 'GESTOR'; }
-  function user() { try { return JSON.parse(sessionStorage.getItem(UKEY)); } catch { return null; } }
-  function can(p) { return !!((PERMS[role()] || {})[p]); }
+  // Sem dado renderizado (pagina anonima, usuario deletado, pagina de erro),
+  // assume o MENOR privilegio — nunca escala por falta de informacao.
+  function role() { return document.body?.dataset.userRole || 'ESTAGIARIO'; }
 
-  function set(r, u) {
-    sessionStorage.setItem(KEY, r);
-    if (u) sessionStorage.setItem(UKEY, JSON.stringify(u));
+  function user() {
+    const nome = document.body?.dataset.userNome;
+    return nome ? { nome } : null;
   }
+
+  function can(p) { return !!((PERMS[role()] || {})[p]); }
 
   function guardPage() {
     const path = window.location.pathname;
@@ -376,6 +384,7 @@ const Auth = (() => {
     });
   }
 
+  // data-role (para CSS) e' distinto do data-user-role lido em role().
   function applyBodyRole() {
     document.body.dataset.role = role();
   }
@@ -406,7 +415,7 @@ const Auth = (() => {
       dropRole.style.cssText = `font-size:10px;font-weight:600;color:${color};margin-top:2px`;
     }
 
-    // Esconde "Gerenciar Usuários" se não for DIRETOR
+    // Esconde "Gerenciar Usuários" se nao for ADMIN
     const manageLink = document.querySelector('.topbar__dropdown a[href="/usuarios"]');
     if (manageLink && !can('viewUsuarios')) manageLink.style.display = 'none';
   }
@@ -418,7 +427,7 @@ const Auth = (() => {
     showRoleBadge();
   }
 
-  return { role, user, can, set, init, ROLES, PERMS };
+  return { role, user, can, init, ROLES, PERMS };
 })();
 
 /* ── Page Transitions ── */
