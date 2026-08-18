@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/css/amostras.css" />
   <link rel="icon" href="/img/zeiss-logo.png" type="image/png" />
 </head>
-<body>
+<body th:attr="data-user-nome=${usuarioNome},data-user-role=${usuarioRole}">
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 <div class="app-shell">
 
