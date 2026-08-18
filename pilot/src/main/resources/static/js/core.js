@@ -209,9 +209,9 @@ const Topbar = {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
-        sessionStorage.removeItem('zp-role');
-        sessionStorage.removeItem('zp-user');
-        window.location.href = '/login?logout';
+        // Precisa passar pelo /logout para o LogoutFilter invalidar a sessao;
+        // ir direto para /login?logout deixava o cookie de sessao valido.
+        window.location.href = '/logout';
       });
     }
 
