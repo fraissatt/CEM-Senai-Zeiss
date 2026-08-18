@@ -34,7 +34,7 @@ Ou seja: mesmo com o `Auth` funcionando, o guard atual seria contornável por UR
 
 ### Nenhuma proteção server-side nas rotas de página
 
-`SecurityConfig` protege `/api/**`, mas nenhuma rota de página (`/usuarios`, `/documentos`, `/lista-editais`, `/detalhes-edital`). Elas caem no `.anyRequest().authenticated()` — servidas pra **qualquer autenticado**. A proteção é exclusivamente client-side, contornável desabilitando JS ou pedindo o HTML por curl. O conteúdo dinâmico não viria (as APIs continuam protegidas), mas a estrutura da página, sim.
+`SecurityConfig` protege `/api/**`, mas nenhuma rota de página (`/usuarios`, `/documentos`, `/lista-editais`, `/detalhes-edital`). Elas caem no `.anyRequest().authenticated()` — servidas pra **qualquer autenticado**. A proteção é exclusivamente client-side, contornável desabilitando JS ou pedindo o HTML por curl. O `/api/editais/**` estava de fato aberto a qualquer autenticado (sem `@PreAuthorize` em `EditalController`) e só passou a ser fechado nesta mesma branch.
 
 ## Estado do ambiente (verificado, não presumido)
 
