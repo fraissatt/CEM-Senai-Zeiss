@@ -336,13 +336,25 @@ const Auth = (() => {
     DIRETOR_CEM: '#7c3aed',
   };
 
-  function role() { return sessionStorage.getItem(KEY) || 'GESTOR'; }
+  function role() { return sessionStorage.getItem(KEY) || 'ESTAGIARIO'; }
   function user() { try { return JSON.parse(sessionStorage.getItem(UKEY)); } catch { return null; } }
   function can(p) { return !!((PERMS[role()] || {})[p]); }
 
   function set(r, u) {
-    sessionStorage.setItem(KEY, r);
+    if (r) sessionStorage.setItem(KEY, r);
     if (u) sessionStorage.setItem(UKEY, JSON.stringify(u));
+  }
+
+  /* Busca o usuário autenticado no backend e popula sessionStorage,
+     já que o form login do Spring Security não faz isso sozinho. */
+  async function loadCurrentUser() {
+    if (user()) return;
+    try {
+      const res = await fetch('/api/usuarios/me', { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) return;
+      const u = await res.json();
+      set(u.cargo, u);
+    } catch { /* offline ou sessão expirada: mantém defaults */ }
   }
 
   function guardPage() {
@@ -411,7 +423,8 @@ const Auth = (() => {
     if (manageLink && !can('viewUsuarios')) manageLink.style.display = 'none';
   }
 
-  function init() {
+  async function init() {
+    await loadCurrentUser();
     applyBodyRole();
     if (!guardPage()) return;
     applyNav();

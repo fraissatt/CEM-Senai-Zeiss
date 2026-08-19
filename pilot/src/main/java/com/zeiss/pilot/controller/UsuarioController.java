@@ -31,6 +31,11 @@ public class UsuarioController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<Usuario> usuarioAtual(Principal principal) {
+        return ResponseEntity.ok(usuarioService.buscarPorEmail(principal.getName()));
+    }
+
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios(@RequestParam(required = false) String role) {
         if (role != null && !role.isEmpty()) {
