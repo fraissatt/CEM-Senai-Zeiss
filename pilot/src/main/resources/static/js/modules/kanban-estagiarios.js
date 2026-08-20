@@ -398,10 +398,18 @@
 
   // ── Init ──────────────────────────────────────────────────────────────────
 
+  // Criar tarefa é trabalho do Gestor/Diretor — some os controles de criação para quem não pode.
+  function applyCreatePermission() {
+    if (window.Auth && Auth.can('create')) return;
+    document.getElementById('btnNovoCard')?.style.setProperty('display', 'none');
+    document.querySelectorAll('.kanban-col__add-btn').forEach(btn => { btn.style.display = 'none'; });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     load();
     initDropZones();
     initColAddBtns();
+    applyCreatePermission();
 
     document.getElementById('btnNovoCard').addEventListener('click', () => openModal(null));
     document.getElementById('btnSalvarCard').addEventListener('click', saveCard);

@@ -50,6 +50,14 @@ public class UsuarioService {
             existente.setSenha(passwordEncoder.encode(usuarioAtualizado.getSenha()));
         }
 
+        existente.setCreate(usuarioAtualizado.getCreate());
+        existente.setEdit(usuarioAtualizado.getEdit());
+        existente.setDelete(usuarioAtualizado.getDelete());
+        existente.setViewEditais(usuarioAtualizado.getViewEditais());
+        existente.setViewDocumentos(usuarioAtualizado.getViewDocumentos());
+        existente.setViewUsuarios(usuarioAtualizado.getViewUsuarios());
+        existente.setViewFinancial(usuarioAtualizado.getViewFinancial());
+
         return usuarioRepository.save(existente);
     }
 

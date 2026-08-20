@@ -312,7 +312,7 @@ const Auth = (() => {
   };
 
   const PERMS = {
-    ESTAGIARIO:  { delete: false, edit: false, viewFinancial: false, viewEditais: false, viewDocumentos: false, viewUsuarios: false, create: true  },
+    ESTAGIARIO:  { delete: false, edit: false, viewFinancial: false, viewEditais: false, viewDocumentos: false, viewUsuarios: false, create: false },
     GESTOR:      { delete: true,  edit: true,  viewFinancial: true,  viewEditais: true,  viewDocumentos: true,  viewUsuarios: false, create: true  },
     DIRETOR_CEM: { delete: true,  edit: true,  viewFinancial: true,  viewEditais: true,  viewDocumentos: true,  viewUsuarios: true,  create: true  },
   };
@@ -329,6 +329,10 @@ const Auth = (() => {
     '/documentos':    ['GESTOR', 'DIRETOR_CEM'],
     '/usuarios':      ['DIRETOR_CEM'],
   };
+
+  // Estagiário só enxerga estas telas — tudo o mais é escondido/bloqueado (espelha o SecurityConfig).
+  const ESTAGIARIO_PAGES = ['/kanban-estagiarios', '/dashboard-estagiarios'];
+  const ESTAGIARIO_HOME  = '/kanban-estagiarios';
 
   const ROLE_COLORS = {
     ESTAGIARIO:  '#6b7280',
@@ -359,6 +363,13 @@ const Auth = (() => {
 
   function guardPage() {
     const path = window.location.pathname;
+
+    if (role() === 'ESTAGIARIO') {
+      const allowed = ESTAGIARIO_PAGES.some(p => path === p || path.startsWith(p + '/') || path.startsWith(p + '?'));
+      if (!allowed) { window.location.replace(ESTAGIARIO_HOME); return false; }
+      return true;
+    }
+
     for (const [page, allowed] of Object.entries(PAGE_ROLES)) {
       if (path === page || path.startsWith(page + '/') || path.startsWith(page + '?')) {
         if (!allowed.includes(role())) { window.location.replace('/'); return false; }
@@ -369,12 +380,21 @@ const Auth = (() => {
 
   function applyNav() {
     const r = role();
-    document.querySelectorAll('.sidebar__nav-item[href]').forEach(a => {
-      const href = a.getAttribute('href');
-      if (NAV_ROLES[href] && !NAV_ROLES[href].includes(r)) {
-        a.style.display = 'none';
-      }
-    });
+
+    if (r === 'ESTAGIARIO') {
+      document.querySelectorAll('.sidebar__nav-item[href]').forEach(a => {
+        const href = a.getAttribute('href');
+        if (!ESTAGIARIO_PAGES.includes(href)) a.style.display = 'none';
+      });
+    } else {
+      document.querySelectorAll('.sidebar__nav-item[href]').forEach(a => {
+        const href = a.getAttribute('href');
+        if (NAV_ROLES[href] && !NAV_ROLES[href].includes(r)) {
+          a.style.display = 'none';
+        }
+      });
+    }
+
     document.querySelectorAll('.sidebar__section-label').forEach(label => {
       let sib = label.nextElementSibling;
       let allHidden = true;

@@ -27,6 +27,41 @@
 
   const CARGO_CLASS = { ESTAGIARIO: 'badge--neutral', GESTOR: 'badge--primary', DIRETOR_CEM: 'badge--danger' };
 
+  /* ── Permissões (aba Permissões) ──────────────────────────── */
+  const PERM_KEYS = ['create', 'edit', 'delete', 'viewEditais', 'viewDocumentos', 'viewUsuarios', 'viewFinancial'];
+
+  function defaultPermsForCargo(cargo) {
+    return (window.Auth?.PERMS || {})[(cargo || '').toUpperCase()] || {};
+  }
+
+  function permsForUsuario(u) {
+    const def = defaultPermsForCargo(u.cargo);
+    const perms = {};
+    PERM_KEYS.forEach(k => { perms[k] = u[k] != null ? u[k] : !!def[k]; });
+    return perms;
+  }
+
+  function setPermCheckboxes(perms) {
+    PERM_KEYS.forEach(k => {
+      const el = document.getElementById('perm_' + k);
+      if (el) el.checked = !!perms[k];
+    });
+  }
+
+  function readPermCheckboxes() {
+    const perms = {};
+    PERM_KEYS.forEach(k => {
+      const el = document.getElementById('perm_' + k);
+      perms[k] = el ? el.checked : false;
+    });
+    return perms;
+  }
+
+  function applyCargoDefaultsToPerms() {
+    const cargo = document.getElementById('cargo').value;
+    setPermCheckboxes(defaultPermsForCargo(cargo));
+  }
+
   function cargoBadge(cargo) {
     const c   = (cargo || '').toUpperCase();
     const cls = CARGO_CLASS[c] || 'badge--neutral';
@@ -122,6 +157,7 @@
     document.getElementById('senhaHint').textContent = _t('Mínimo 6 caracteres.');
     document.getElementById('senha').required = true;
     document.getElementById('tabDocs').style.display = 'none';
+    setPermCheckboxes({});
     switchTab('dados');
     Modal.open('modalUsuario');
   }
@@ -140,6 +176,7 @@
     document.getElementById('senhaHint').textContent       = _t('Deixe em branco para manter a senha atual.');
     document.getElementById('senha').required = false;
     document.getElementById('tabDocs').style.display = '';
+    setPermCheckboxes(permsForUsuario(u));
     switchTab('dados');
     renderDocs(id);
     Modal.open('modalUsuario');
@@ -158,7 +195,7 @@
 
     if (!cargo) { Toast.warning(_t('Selecione um cargo.')); return; }
 
-    const payload = { nome, email, cargo };
+    const payload = { nome, email, cargo, ...readPermCheckboxes() };
     if (senha) payload.senha = senha;
 
     const btn = document.getElementById('btnSalvarUsuario');
@@ -341,6 +378,7 @@
     document.getElementById('btnExcluirUsuario').addEventListener('click', excluir);
     document.getElementById('btnAnterior').addEventListener('click', prevPage);
     document.getElementById('btnProximo').addEventListener('click', nextPage);
+    document.getElementById('cargo').addEventListener('change', applyCargoDefaultsToPerms);
     document.getElementById('btnLimparFiltros').addEventListener('click', () => {
       document.getElementById('campoBusca').value  = '';
       document.getElementById('filtroCargo').value = '';
