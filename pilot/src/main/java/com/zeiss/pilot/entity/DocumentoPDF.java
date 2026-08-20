@@ -39,8 +39,9 @@ public class DocumentoPDF {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "subpasta_id", nullable = false)
+    // Opcional: PDFs gerais do laboratório não pertencem a nenhuma subpasta.
+    @ManyToOne
+    @JoinColumn(name = "subpasta_id")
     private PastaDocumento subpasta;
 
     // Getters e Setters

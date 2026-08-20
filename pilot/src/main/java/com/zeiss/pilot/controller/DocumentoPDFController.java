@@ -41,9 +41,8 @@ public class DocumentoPDFController {
 
     /**
      * Upload de documento:
-     * - Front chama /api/documentos/upload (documentos.js)
-     * - subpastaId é obrigatório (amarração correta da listagem por subpasta)
-     * - pastaId é opcional (mantido apenas por compatibilidade, se o service utilizar)
+     * - Front chama /api/documentos/upload (modules/documentos.js)
+     * - subpastaId e pastaId são opcionais: sem eles, o documento é um PDF geral do laboratório
      */
     @PostMapping("/upload")
     @PreAuthorize("hasRole('ADMIN')")
