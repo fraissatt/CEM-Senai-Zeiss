@@ -1,5 +1,6 @@
 package com.zeiss.pilot.controller;
 
+import com.zeiss.pilot.dto.NotaEstagiarioCriarRequest;
 import com.zeiss.pilot.entity.NotaEstagiario;
 import com.zeiss.pilot.service.NotaEstagiarioService;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,14 @@ public class NotaEstagiarioController {
     }
 
     @PostMapping
-    public ResponseEntity<NotaEstagiario> criar(@RequestBody NotaEstagiario nota) {
+    public ResponseEntity<NotaEstagiario> criar(@RequestBody NotaEstagiarioCriarRequest request) {
+        NotaEstagiario nota = new NotaEstagiario();
+        nota.setEstagiariaId(request.getEstagiariaId());
+        nota.setServicoId(request.getServicoId());
+        nota.setNota(request.getNota());
+        nota.setComentario(request.getComentario());
+        nota.setAvaliadorNome(request.getAvaliadorNome());
+        nota.setData(request.getData());
         return ResponseEntity.ok(service.salvar(nota));
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zeiss.pilot.dto.PastaDocumentoAtualizarRequest;
+import com.zeiss.pilot.dto.PastaDocumentoCriarRequest;
 import com.zeiss.pilot.dto.PastaDocumentoDTO;
 import com.zeiss.pilot.entity.PastaDocumento;
 import com.zeiss.pilot.service.PastaDocumentoService;
@@ -59,9 +61,9 @@ public class PastaDocumentoController {
 
     // CRIAR pasta (raiz ou subpasta se enviar pastaPaiId)
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody PastaDocumentoDTO dto) {
+    public ResponseEntity<?> criar(@RequestBody PastaDocumentoCriarRequest request) {
         try {
-            PastaDocumento p = service.criarPasta(dto.getNome(), dto.getTipoAcesso(), dto.getPastaPaiId());
+            PastaDocumento p = service.criarPasta(request.getNome(), request.getTipoAcesso(), request.getPastaPaiId());
             return ResponseEntity.status(HttpStatus.CREATED).body(toDTO(p));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -70,9 +72,9 @@ public class PastaDocumentoController {
 
     // ATUALIZAR pasta/subpasta
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody PastaDocumentoDTO dto) {
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody PastaDocumentoAtualizarRequest request) {
         try {
-            PastaDocumento p = service.atualizar(id, dto.getNome(), dto.getTipoAcesso());
+            PastaDocumento p = service.atualizar(id, request.getNome(), request.getTipoAcesso());
             return ResponseEntity.ok(toDTO(p));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
