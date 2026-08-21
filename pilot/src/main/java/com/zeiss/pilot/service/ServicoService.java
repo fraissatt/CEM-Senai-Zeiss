@@ -56,6 +56,27 @@ public class ServicoService {
         if (servico.getObservacao() != null && servico.getObservacao().trim().isEmpty()) {
             servico.setObservacao(null);
         }
+        servico.setCpfOuCnpj(normalizarCpfOuCnpj(servico.getCpfOuCnpj()));
+
+        if (servico.getValor() == null || servico.getValor().signum() <= 0) {
+            throw new IllegalArgumentException("Valor inválido: informe um número maior que zero.");
+        }
+    }
+
+    // Defesa em profundidade: reaplica a mesma máscara do frontend caso a API
+    // seja chamada diretamente, sem passar pelo formulário.
+    private String normalizarCpfOuCnpj(String cpfOuCnpj) {
+        if (cpfOuCnpj == null || cpfOuCnpj.isBlank()) {
+            return cpfOuCnpj;
+        }
+        String digits = cpfOuCnpj.replaceAll("\\D", "");
+        if (digits.length() != 11 && digits.length() != 14) {
+            throw new IllegalArgumentException(
+                    "CPF/CNPJ inválido: informe 11 dígitos (CPF) ou 14 dígitos (CNPJ).");
+        }
+        return digits.length() == 11
+                ? digits.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4")
+                : digits.replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5");
     }
 
     public List<RelatorioMensalDTO> obterRelatorioMensal() {

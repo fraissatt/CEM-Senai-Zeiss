@@ -135,7 +135,7 @@ const ServicosModule = (() => {
       document.getElementById('quantidade').value      = s.quantidade || '';
       document.getElementById('status').value          = s.status || '';
       document.getElementById('tecnicoResponsavel').value = s.tecnicoResponsavel || '';
-      document.getElementById('valor').value           = s.valor || '';
+      document.getElementById('valor').value           = formatValorFromNumber(s.valor);
       document.getElementById('dataPrevista').value    = s.dataPrevista ? s.dataPrevista.split('T')[0] : '';
       document.getElementById('dataRealizada').value   = s.dataRealizada ? s.dataRealizada.split('T')[0] : '';
       document.getElementById('observacao').value      = s.observacao || '';
@@ -157,16 +157,28 @@ const ServicosModule = (() => {
     const form = document.getElementById('servicoForm');
     if (!form.checkValidity()) { form.reportValidity(); return; }
 
+    const cpfOuCnpj = maskCpfCnpj(document.getElementById('cpfOuCnpj').value);
+    if (!isCpfCnpjLengthValid(cpfOuCnpj)) {
+      Toast.error(_t('CPF/CNPJ inválido: informe 11 dígitos (CPF) ou 14 dígitos (CNPJ).'));
+      return;
+    }
+
+    const valor = parseValor(document.getElementById('valor').value);
+    if (!Number.isFinite(valor) || valor <= 0) {
+      Toast.error(_t('Valor inválido: informe um número maior que zero (ex: 2500,00).'));
+      return;
+    }
+
     const id = document.getElementById('servicoId').value;
     const payload = {
       cliente:             document.getElementById('cliente').value.trim(),
-      cpfOuCnpj:           document.getElementById('cpfOuCnpj').value.trim(),
+      cpfOuCnpj:           cpfOuCnpj,
       endereco:            document.getElementById('endereco').value.trim(),
       solicitacao:         document.getElementById('solicitacao').value.trim(),
       quantidade:          parseInt(document.getElementById('quantidade').value, 10),
       status:              document.getElementById('status').value,
       tecnicoResponsavel:  document.getElementById('tecnicoResponsavel').value.trim(),
-      valor:               document.getElementById('valor').value.trim(),
+      valor:               valor,
       dataPrevista:        document.getElementById('dataPrevista').value || null,
       dataRealizada:       document.getElementById('dataRealizada').value || null,
       observacao:          document.getElementById('observacao').value.trim()
@@ -237,6 +249,49 @@ const ServicosModule = (() => {
     }
   }
 
+  /* ── CPF/CNPJ mask ── */
+  function maskCpfCnpj(raw) {
+    const digits = (raw || '').replace(/\D/g, '').slice(0, 14);
+    if (digits.length <= 11) {
+      return digits
+        .replace(/^(\d{3})(\d)/, '$1.$2')
+        .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
+    }
+    return digits
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+  }
+
+  function isCpfCnpjLengthValid(masked) {
+    const digits = (masked || '').replace(/\D/g, '');
+    return digits.length === 11 || digits.length === 14;
+  }
+
+  /* ── Valor (R$) — máscara de dígitos entrando pela direita (padrão de apps bancários) ── */
+  function maskValor(raw) {
+    let digits = (raw || '').replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+    if (!digits) return '';
+    digits = digits.padStart(3, '0');
+    const centavos = digits.slice(-2);
+    const inteiro  = digits.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${inteiro},${centavos}`;
+  }
+
+  function formatValorFromNumber(num) {
+    if (num === null || num === undefined || isNaN(num)) return '';
+    const [inteiro, centavos] = Number(num).toFixed(2).split('.');
+    return `${inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${centavos}`;
+  }
+
+  function parseValor(raw) {
+    const normalized = (raw || '').trim().replace(/\./g, '').replace(',', '.');
+    if (!normalized) return NaN;
+    return Number(normalized);
+  }
+
   /* ── Filters ── */
   function applyFilters() {
     currentQuery  = (document.getElementById('campoBusca')?.value || '').trim();
@@ -268,6 +323,16 @@ const ServicosModule = (() => {
     // Show/hide nota section based on status change
     document.getElementById('status')?.addEventListener('change', e => {
       toggleNotaSection(e.target.value);
+    });
+
+    // Live CPF/CNPJ mask
+    document.getElementById('cpfOuCnpj')?.addEventListener('input', e => {
+      e.target.value = maskCpfCnpj(e.target.value);
+    });
+
+    // Live Valor (R$) mask — dígitos entram pela direita, formata como 2.500,00
+    document.getElementById('valor')?.addEventListener('input', e => {
+      e.target.value = maskValor(e.target.value);
     });
 
     document.getElementById('btnNovoServico')?.addEventListener('click', novo);
