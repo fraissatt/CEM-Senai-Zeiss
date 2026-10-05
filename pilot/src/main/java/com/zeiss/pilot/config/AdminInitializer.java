@@ -1,33 +1,44 @@
-// package com.zeiss.pilot.config;
+package com.zeiss.pilot.config;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.context.annotation.Configuration;
-// import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-// import com.zeiss.pilot.entity.Usuario;
-// import com.zeiss.pilot.repository.UsuarioRepository;
+import com.zeiss.pilot.entity.Usuario;
+import com.zeiss.pilot.repository.UsuarioRepository;
 
-// import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
-// @Configuration
-// public class AdminInitializer {
+@Configuration
+public class AdminInitializer {
 
-//     @Autowired
-//     private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final String adminEmail;
+    private final String adminSenha;
 
-//     @Autowired
-//     private PasswordEncoder passwordEncoder;
+    public AdminInitializer(UsuarioRepository usuarioRepository,
+                            PasswordEncoder passwordEncoder,
+                            @Value("${app.admin.email:admin.demo@zeiss.com}") String adminEmail,
+                            @Value("${app.admin.password:Zeiss@Demo#2026}") String adminSenha) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.adminEmail = adminEmail;
+        this.adminSenha = adminSenha;
+    }
 
-//     @PostConstruct
-//     public void initAdmin() {
-//         if (usuarioRepository.findByEmail("admin@zeiss.com").isEmpty()) {
-//             Usuario admin = new Usuario();
-//             admin.setNome("Administrador");
-//             admin.setEmail("admin@zeiss.com");
-//             admin.setRole("ADMIN");
-//             admin.setSenha(passwordEncoder.encode("SENHA_DE_TESTE"));
-//             usuarioRepository.save(admin);
-//             System.out.println("Usuário ADMIN criado com sucesso!");
-//         }
-//     }
-// }
+    @PostConstruct
+    public void initAdmin() {
+        if (usuarioRepository.findByEmail(adminEmail).isPresent()) return;
+
+        Usuario admin = new Usuario();
+        admin.setNome("Administrador");
+        admin.setEmail(adminEmail);
+        admin.setCargo("DIRETOR_CEM");
+        admin.derivarRoleDoCargo();
+        admin.setSenha(passwordEncoder.encode(adminSenha));
+        usuarioRepository.save(admin);
+
+        System.out.println("[INIT] Usuário ADMIN criado: " + adminEmail);
+    }
+}
