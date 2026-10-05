@@ -9,6 +9,7 @@ Sistema de gestão para o Centro de Excelência em Metrologia (CEM) do SENAI Zei
 
 ## Sumário
 
+- [Telas](#telas)
 - [Stack](#stack)
 - [Pré-requisitos](#pré-requisitos)
 - [Configuração](#configuração)
@@ -18,6 +19,40 @@ Sistema de gestão para o Centro de Excelência em Metrologia (CEM) do SENAI Zei
 - [Segurança](#segurança)
 - [Estrutura do repositório](#estrutura-do-repositório)
 - [Contribuindo](#contribuindo)
+
+## Telas
+
+Os gráficos dos dashboards são desenhados com [D3.js](https://d3js.org/) sobre um design system próprio em CSS (tokens, tema claro/escuro e layout responsivo).
+
+### Dashboard Executivo
+
+KPIs operacionais e distribuição das ordens de serviço por status.
+
+![Dashboard Executivo](docs/screenshots/dashboard-executivo.png)
+
+### Relatório de Serviços
+
+Receita e volume de ordens de serviço por mês, com detalhamento mensal.
+
+![Relatório de Serviços](docs/screenshots/relatorio-servicos.png)
+
+### Dashboard de Avaliações (NPS)
+
+NPS, distribuição entre promotores, neutros e detratores, evolução mensal e respostas por vínculo.
+
+![Dashboard de Avaliações](docs/screenshots/dashboard-avaliacoes.png)
+
+### Dashboard de Eventos
+
+Participação e distribuição mensal de eventos.
+
+![Dashboard de Eventos](docs/screenshots/dashboard-eventos.png)
+
+### Formulário de satisfação
+
+Formulário de avaliação respondido por clientes e convidados, acessível por QR code sem login.
+
+![Formulário de satisfação](docs/screenshots/formulario-avaliacao.png)
 
 ## Stack
 
