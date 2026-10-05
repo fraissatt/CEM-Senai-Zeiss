@@ -82,7 +82,7 @@
       </div>
       <div class="kpi-card kpi-card--warning">
         <div class="kpi-card__label">${_t('destag.kpi.nota','Nota Média Geral')}</div>
-        <div class="kpi-card__value">${totais.mediaGeralNotas !== null ? totais.mediaGeralNotas + '/5' : '—'}</div>
+        <div class="kpi-card__value">${totais.mediaGeralNotas !== null ? Fmt.nota(totais.mediaGeralNotas) + '/5' : '—'}</div>
         <div class="kpi-card__sub">${_t('destag.kpi.avalDir','avaliações do diretor')}</div>
       </div>`;
   }
@@ -131,7 +131,7 @@
         </td>
         <td style="text-align:center">
           <span style="color:${starsColor(nota)};font-size:16px;letter-spacing:1px">${stars(nota)}</span>
-          ${nota !== null ? `<div style="font-size:var(--font-size-xs);color:var(--text-muted)">${nota}/5</div>` : ''}
+          ${nota !== null ? `<div style="font-size:var(--font-size-xs);color:var(--text-muted)">${Fmt.nota(nota)}/5</div>` : ''}
         </td>
         <td class="actions-cell" style="white-space:nowrap">
           <button class="btn btn-ghost btn-sm" data-estag-id="${e.id}" data-action="nota" title="Adicionar nota">
@@ -369,7 +369,7 @@
     </div>
     <div class="kpi">
       <div class="kpi-label">Nota Média</div>
-      <div class="kpi-value" style="color:${notaBg(e.mediaNotas)}">${e.mediaNotas !== null ? e.mediaNotas + '/5' : '—'}</div>
+      <div class="kpi-value" style="color:${notaBg(e.mediaNotas)}">${e.mediaNotas !== null ? Fmt.nota(e.mediaNotas) + '/5' : '—'}</div>
     </div>
   </div>
 

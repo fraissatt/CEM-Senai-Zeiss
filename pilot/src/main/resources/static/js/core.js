@@ -139,6 +139,16 @@ const Fmt = {
     return n.toLocaleString(locale, { style: 'currency', currency: 'BRL' });
   },
 
+  // Nota média (0–5): a API devolve Double cru (ex.: 4.571428571428571), então limita a 2 casas.
+  nota(value) {
+    if (value == null || value === '') return '—';
+    const n = parseFloat(value);
+    if (isNaN(n)) return '—';
+    const locale = window.I18n?.lang() === 'en' ? 'en-US'
+                 : window.I18n?.lang() === 'de' ? 'de-DE' : 'pt-BR';
+    return n.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+  },
+
   relative(iso) {
     if (!iso) return '—';
     try {
